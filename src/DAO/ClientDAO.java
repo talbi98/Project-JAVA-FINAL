@@ -82,6 +82,7 @@ public class ClientDAO extends DAO<Client, Integer> {
                 }
             }
         } catch (SQLException e) {
+        	
             e.printStackTrace();
         }
         return null;
