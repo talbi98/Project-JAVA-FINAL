@@ -8,6 +8,8 @@ public class SingleConnection {
 
 	private static Connection cn ;
 	
+	//test hadd
+	
 	private SingleConnection() {
 		try {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
