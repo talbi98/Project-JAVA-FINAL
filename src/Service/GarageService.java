@@ -199,11 +199,6 @@ public class GarageService {
     
     
     
-    
-    
-    
-    
-    
     public double calculerPrixMoyenVentes() {
         List<Vehicule> tout = vehiculeDAO.findAll();
         
