@@ -19,7 +19,6 @@ public class VenteDAO extends DAO<Vente, Integer> {
 
     private VehiculeDAO vehiculeDAO = new VehiculeDAO();
     private ClientDAO clientDAO = new ClientDAO();
-    // private EmployeDAO employeDAO = new EmployeDAO(); // A décommenter si tu as fini findById dans EmployeDAO
 
     
     public Vente create(Vente v) {
@@ -31,7 +30,7 @@ public class VenteDAO extends DAO<Vente, Integer> {
             ps.setDate(1, v.getdateVente() ); 
             ps.setDouble(2, v.getMontantFinal());
             
-            // ICI ON MET LES CLÉS ÉTRANGÈRES
+
             ps.setInt(3, v.getVehicule().getId());
             ps.setInt(4, v.getClient().getId());
             ps.setInt(5, v.getVendeur().getId());
@@ -65,13 +64,12 @@ public class VenteDAO extends DAO<Vente, Integer> {
                 Client c = clientDAO.findById(idClient);
                 Employe e = EmployeDAO.findById(idVendeur);
 
-                // 3. Petit cast de sécurité : on s'assure que l'employé est bien un Vendeur
                 Vendeur vendeur = null;
                 if (e instanceof Vendeur) {
                     vendeur = (Vendeur) e;
                 }
 
-                // 4. On reconstruit la Vente
+
                 if (v != null && c != null && vendeur != null) {
                     Vente vente = new Vente(
                         rs.getInt("id"),
@@ -134,12 +132,11 @@ public class VenteDAO extends DAO<Vente, Integer> {
             ps.setDate(1, v.getdateVente());
             ps.setDouble(2, v.getMontantFinal());
             
-            // On met à jour les clés étrangères
             ps.setInt(3, v.getVehicule().getId());
             ps.setInt(4, v.getClient().getId());
             ps.setInt(5, v.getVendeur().getId());
             
-            ps.setInt(6, v.getId()); // Clause WHERE
+            ps.setInt(6, v.getId()); 
 
            ps.executeUpdate() ;
         } catch (SQLException e) {

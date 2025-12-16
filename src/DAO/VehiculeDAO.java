@@ -84,14 +84,13 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
                  String type = rs.getString("type_vehicule");
                  Vehicule v = null;
 
-                 // 1. Création de l'objet selon le type
                  if ("THERMIQUE".equals(type)) {
                      v = new VoitureThermique(
                          rs.getInt("id"),
                          rs.getString("marque"),
                          rs.getString("modele"),
                          rs.getDouble("prix_vente"),
-                         rs.getInt("emission_co2"), // Attention à l'ordre de tes colonnes constructeur
+                         rs.getInt("emission_co2"), 
                          rs.getInt("cylindree")
                      );
                  } else if ("ELECTRIQUE".equals(type)) {
@@ -105,11 +104,9 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
                      );
                  }
                  
-                 // 2. IMPORTANT : Remplissage des champs communs qui manquaient !
                  if (v != null) {
                      v.setImmatriculation(rs.getString("immatriculation"));
                      
-                     // C'EST CETTE LIGNE QUI FAIT MARCHER LA MOYENNE :
                      v.setStatut(rs.getString("statut")); 
                      
                      liste.add(v);
@@ -137,7 +134,6 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
             if (rs.next()) {
                 String type = rs.getString("type_vehicule");
                 
-                // 1. On instancie selon le type (Polymorphisme)
                 if ("ELECTRIQUE".equals(type)) {
                     v = new VehiculeElectrique(
                         rs.getInt("id"),
@@ -158,10 +154,8 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
                     );
                 }
                 
-                // 2. IMPORTANT : On remplit les champs communs (Immatriculation et STATUT)
                 v.setImmatriculation(rs.getString("immatriculation"));
                 
-                // C'est cette ligne qui manquait probablement :
                 v.setStatut(rs.getString("statut")); 
             }
         } catch (SQLException e) { e.printStackTrace(); }
@@ -187,9 +181,7 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
             ps.setString(3, v.getImmatriculation());
             ps.setDouble(4, v.getPrixVente());
             
-            // --- LA CORRECTION EST ICI ---
-            // Avant tu avais : ps.setString(5, "DISPO"); 
-            // Maintenant :
+           
             ps.setString(5, v.getStatut()); 
             // -----------------------------
 

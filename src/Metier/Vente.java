@@ -70,7 +70,7 @@ public class Vente implements IFacturable {
     
 	@Override
 	public double getMontantTotal() {
-		// TODO Auto-generated method stub
+
 		return this.montantFinal;	}
 
 	@Override

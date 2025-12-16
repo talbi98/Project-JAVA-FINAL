@@ -14,14 +14,15 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 	private VehiculeDAO vehiculeDAO = new VehiculeDAO();
 	private EmployeDAO employeDAO = new EmployeDAO();
 
-	@Override
+	
+	
 	public Intervention create(Intervention i) {
-		// J'ai ajouté le prix si tu as mis la colonne en base, sinon enlève ", prix" et
-		// le dernier "?"
+		
 		String sql = "INSERT INTO intervention (date_debut, description, statut, vehicule_id, mecanicien_id) VALUES (?, ?, ?, ?, ?)";
 
-		try (PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			// SECURITE DATE : Conversion explicite comme pour Vente
+		try  {
+			PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
 			ps.setDate(1, new java.sql.Date(i.getDateDebut().getTime()));
 			ps.setString(2, i.getDescription());
 			ps.setString(3, i.getStatut());
@@ -31,6 +32,7 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 			ps.executeUpdate();
 
 			ResultSet rs = ps.getGeneratedKeys();
+			
 			if (rs.next()) {
 				i.setId(rs.getInt(1));
 			}
@@ -45,21 +47,21 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 		List<Intervention> liste = new ArrayList<>();
 		String sql = "SELECT * FROM intervention";
 
-		try (Statement stmt = connect.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+		try  {
+			
+			Statement stmt = connect.createStatement(); 
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			
 			while (rs.next()) {
+				
 				Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
 				Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
 
 				if (v != null && e instanceof Mecanicien) {
-					Intervention i = new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"), // Peut
-																															// être
-																															// null,
-																															// JDBC
-																															// gère
-																															// ça
-							rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, 0.0 // Prix par
-																										// défaut
-					);
+					Intervention i = new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"), 
+					rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, 0.0  );
+				
 					liste.add(i);
 				}
 			}
@@ -70,9 +72,14 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 	}
 
 	public Intervention findById(Integer id) {
+		
 		String sql = "SELECT * FROM intervention WHERE id = ?";
-		try (PreparedStatement ps = connect.prepareStatement(sql)) {
+		
+		try  {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			
 			ps.setInt(1, id);
+		
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
@@ -96,22 +103,18 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 
         try (PreparedStatement ps = connect.prepareStatement(sql)) {
 
-            // 1. Gestion de la Date (si null ou pas)
             if (i.getDateFin() != null) {
                 ps.setDate(1, new java.sql.Date(i.getDateFin().getTime()));
             } else {
                 ps.setNull(1, Types.DATE);
             }
 
-            // 2. Les autres champs
             ps.setString(2, i.getStatut());
             ps.setString(3, i.getDescription());
             ps.setInt(4, i.getId());
 
-            // 3. Exécution
             int rows = ps.executeUpdate();
 
-            // Si au moins 1 ligne a été changée, on renvoie l'objet modifié
             if (rows > 0) {
                 return i;
             }
@@ -120,7 +123,6 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
             e.printStackTrace();
         }
         
-        // Si on arrive ici (erreur SQL ou ID introuvable), on renvoie null
         return null;
     }
 	
