@@ -70,31 +70,28 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
     
     
 
-    public List<Vehicule> findAll()  {
-    	
+    public List<Vehicule> findAll() {
         List<Vehicule> liste = new ArrayList<>();
         String sql = "SELECT * FROM vehicule";
         
         open();
 
         try {
-        	
-        	PreparedStatement stmt = connect.prepareStatement(sql) ;
-        	
-        	 rs = stmt.executeQuery();
-        	 
-        	 
-        	 while (rs.next()) {
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            rs = stmt.executeQuery();
+             
+            while (rs.next()) {
                  String type = rs.getString("type_vehicule");
                  Vehicule v = null;
 
+                 // 1. Création de l'objet selon le type
                  if ("THERMIQUE".equals(type)) {
                      v = new VoitureThermique(
                          rs.getInt("id"),
                          rs.getString("marque"),
                          rs.getString("modele"),
                          rs.getDouble("prix_vente"),
-                         rs.getInt("emission_co2"),
+                         rs.getInt("emission_co2"), // Attention à l'ordre de tes colonnes constructeur
                          rs.getInt("cylindree")
                      );
                  } else if ("ELECTRIQUE".equals(type)) {
@@ -106,26 +103,23 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
                          rs.getInt("batterie_kwh"),
                          rs.getInt("autonomie_km")
                      );
-                     
                  }
                  
+                 // 2. IMPORTANT : Remplissage des champs communs qui manquaient !
                  if (v != null) {
+                     v.setImmatriculation(rs.getString("immatriculation"));
+                     
+                     // C'EST CETTE LIGNE QUI FAIT MARCHER LA MOYENNE :
+                     v.setStatut(rs.getString("statut")); 
                      
                      liste.add(v);
                  }
              }
-         
-       
-        	
-        	
-        }catch(SQLException e){
-        	e.printStackTrace();
+        } catch(SQLException e){
+            e.printStackTrace();
         }
-
-
         return liste;
     }
-    
     
     
     
