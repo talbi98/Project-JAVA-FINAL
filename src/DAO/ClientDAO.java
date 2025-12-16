@@ -126,6 +126,8 @@ public class ClientDAO extends DAO<Client, Integer> {
         }
         return c ;
     }
+    
+    
 
 
 	
