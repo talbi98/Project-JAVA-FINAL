@@ -13,12 +13,12 @@ public class SingleConnection {
 
 
         	//mac
-        	//cn = DriverManager.getConnection("jdbc:mysql://localhost:8889/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "root");
+        	cn = DriverManager.getConnection("jdbc:mysql://localhost:8889/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "root");
             
         	
         	
         	//ISMA:
-            cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
+           // cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
 
             System.out.println("Connexion à la base de données réussie !");
 
