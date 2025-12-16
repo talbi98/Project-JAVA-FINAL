@@ -6,7 +6,7 @@ public abstract class Vehicule {
     protected String modele;
     protected String immatriculation;
     protected double prixVente;
-    protected String statut; // "DISPO" ou "VENDU"
+    protected String statut; // 
 
     public Vehicule(int id, String marque, String modele, double prixVente) {
         this.id = id;

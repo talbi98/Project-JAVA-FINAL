@@ -132,55 +132,46 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
     
 
     
-    public Vehicule findById(int id) {
-        String sql = "SELECT * FROM vehicule WHERE id = ?";
+    public Vehicule findById(Integer id) {
         Vehicule v = null;
-        open();
-
-        try {
-        	PreparedStatement ps = connect.prepareStatement(sql);
-
+        String sql = "SELECT * FROM vehicule WHERE id = ?";
+        
+        try (PreparedStatement ps = connect.prepareStatement(sql)) {
             ps.setInt(1, id);
-            
-            rs = ps.executeQuery();
-               
+            ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-            	
-            	
-                    String type = rs.getString("type_vehicule");
-
-                    if ("THERMIQUE".equals(type)) {
-                        v = new VoitureThermique(
-                            rs.getInt("id"),
-                            rs.getString("marque"),
-                            rs.getString("modele"),
-                            rs.getDouble("prix_vente"),
-                            rs.getInt("emission_co2"),
-                            rs.getInt("cylindree")
-                        );
-                    } else if ("ELECTRIQUE".equals(type)) {
-                        v = new VehiculeElectrique(
-                            rs.getInt("id"),
-                            rs.getString("marque"),
-                            rs.getString("modele"),
-                            rs.getDouble("prix_vente"),
-                            rs.getInt("batterie_kwh"),
-                            rs.getInt("autonomie_km")
-                        );
-                    }
-
-                    if (v != null) {
-                        v.setImmatriculation(rs.getString("immatriculation"));
-                    }
+                String type = rs.getString("type_vehicule");
+                
+                // 1. On instancie selon le type (Polymorphisme)
+                if ("ELECTRIQUE".equals(type)) {
+                    v = new VehiculeElectrique(
+                        rs.getInt("id"),
+                        rs.getString("marque"),
+                        rs.getString("modele"),
+                        rs.getDouble("prix_vente"),
+                        rs.getInt("batterie_kwh"),
+                        rs.getInt("autonomie_km")
+                    );
+                } else {
+                    v = new VoitureThermique(
+                        rs.getInt("id"),
+                        rs.getString("marque"),
+                        rs.getString("modele"),
+                        rs.getDouble("prix_vente"),
+                        rs.getInt("cylindree"),
+                        rs.getInt("emission_co2")
+                    );
                 }
-            
-        } catch (SQLException e) {
-            System.err.println("Erreur dans findById : " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return v; 
+                
+                // 2. IMPORTANT : On remplit les champs communs (Immatriculation et STATUT)
+                v.setImmatriculation(rs.getString("immatriculation"));
+                
+                // C'est cette ligne qui manquait probablement :
+                v.setStatut(rs.getString("statut")); 
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return v;
     }
     
     
@@ -195,15 +186,21 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
                      "WHERE id=?";
 
         try {
-             PreparedStatement ps = connect.prepareStatement(sql);
+            PreparedStatement ps = connect.prepareStatement(sql);
 
             ps.setString(1, v.getMarque());
             ps.setString(2, v.getModele());
             ps.setString(3, v.getImmatriculation());
             ps.setDouble(4, v.getPrixVente());
-            ps.setString(5, "DISPO"); 
+            
+            // --- LA CORRECTION EST ICI ---
+            // Avant tu avais : ps.setString(5, "DISPO"); 
+            // Maintenant :
+            ps.setString(5, v.getStatut()); 
+            // -----------------------------
+
             if (v instanceof VoitureThermique) {
-            	VoitureThermique vt = (VoitureThermique) v;
+                VoitureThermique vt = (VoitureThermique) v;
                 ps.setInt(6, vt.getCylindree());     
                 ps.setInt(7, vt.getEmissionCo2());   
                 ps.setNull(8, Types.INTEGER);        
@@ -227,7 +224,6 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
         }
         
         return v;
-
     }
 
   

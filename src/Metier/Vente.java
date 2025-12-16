@@ -2,7 +2,7 @@ package Metier;
 
 import java.sql.Date;
 
-public class Vente {
+public class Vente implements IFacturable {
     private int id;
     private Date dateVente;
     private double montantFinal;
@@ -59,5 +59,32 @@ public class Vente {
     
     public double getMontantFinal() {
     	return montantFinal; 
+    }
+
+    
+    
+    
+    
+    
+    
+    
+	@Override
+	public double getMontantTotal() {
+		// TODO Auto-generated method stub
+		return this.montantFinal;	}
+
+	@Override
+    public String getDescriptionFacture() {
+        return "Vente véhicule : " + vehicule.getMarque() + " " + vehicule.getModele();
+    }
+
+    @Override
+    public Client getClientFacture() {
+        return this.client;
+    }
+    
+    @Override
+    public String getReference() {
+        return "V-" + this.id;
     }
 }

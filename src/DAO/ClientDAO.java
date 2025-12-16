@@ -67,7 +67,8 @@ public class ClientDAO extends DAO<Client, Integer> {
     
     public Client findById(int id) {
         String sql = "SELECT * FROM client WHERE id = ?";
-        try (PreparedStatement ps = connect.prepareStatement(sql)) {
+        try {
+        	PreparedStatement ps = connect.prepareStatement(sql);
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -88,11 +89,14 @@ public class ClientDAO extends DAO<Client, Integer> {
         return null;
     }
     
+    
+    
     public void delete(Client toto) {
         open();
 
          String sql = "DELETE FROM client WHERE id = ?";
-         try (PreparedStatement stmt = connect.prepareStatement(sql)) {
+         try  {
+        	 PreparedStatement stmt = connect.prepareStatement(sql);
              stmt.setInt(1, toto.getId());
              stmt.executeUpdate();
          } catch(SQLException e) { e.printStackTrace(); }
@@ -105,8 +109,8 @@ public class ClientDAO extends DAO<Client, Integer> {
         open();
 
         
-        try (PreparedStatement ps = connect.prepareStatement(sql)) {
-            
+        try  {
+        	PreparedStatement ps = connect.prepareStatement(sql);
             ps.setString(1, c.getNom());
             ps.setString(2, c.getPrenom());
             ps.setString(3, c.getEmail());

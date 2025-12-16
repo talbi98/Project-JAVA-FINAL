@@ -22,7 +22,7 @@ public class Client {
         this.prenom = prenom;
         this.email = email;
         this.telephone = telephone;
-        this.vipLevel = "STANDARD"; // Par défaut
+        this.vipLevel = "STANDARD";
     }
 
     public int getId() {
