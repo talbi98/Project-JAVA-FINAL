@@ -207,6 +207,42 @@ public class GarageService {
     
     
     
+    
+    
+    
+    
+    
+    public double calculerPrixMoyenVentes() {
+        List<Vehicule> tout = vehiculeDAO.findAll();
+        
+        return tout.stream()
+                .filter(v -> "VENDU".equals(v.getStatut())) // On garde que les vendues
+                .mapToDouble(Vehicule::getPrixVente)         // On prend juste le prix
+                .average()                                   // On fait la moyenne
+                .orElse(0.0);                                // 0 si rien vendu
+    }
+
+    /**
+     * Compte combien de véhicules de chaque type on a en stock.
+     */
+    public void afficherRepartitionStock() {
+        List<Vehicule> stock = vehiculeDAO.findAll();
+        
+        long nbElec = stock.stream()
+                .filter(v -> v instanceof Metier.VehiculeElectrique && "DISPO".equals(v.getStatut()))
+                .count();
+                
+        long nbTherm = stock.stream()
+                .filter(v -> v instanceof Metier.VoitureThermique && "DISPO".equals(v.getStatut()))
+                .count();
+                
+        System.out.println("📊 STATS STOCK :");
+        System.out.println("- Électriques : " + nbElec);
+        System.out.println("- Thermiques  : " + nbTherm);
+    }
+    
+    
+    
 }
     
     
