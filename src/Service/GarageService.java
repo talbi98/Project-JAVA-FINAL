@@ -240,7 +240,8 @@ public class GarageService {
                 .limit(3)
                 .collect(Collectors.toList());
     }
-    
+
+       
     public List<Vehicule> rechercherParBudget(double budgetMax) {
         return vehiculeDAO.findAll().stream()
                 .filter(v -> "DISPO".equals(v.getStatut()))
@@ -259,6 +260,3 @@ public class GarageService {
     
     
 }
-    
-    
-    
