@@ -1,6 +1,8 @@
 package Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import DAO.ClientDAO;
@@ -206,10 +208,10 @@ public class GarageService {
         List<Vehicule> tout = vehiculeDAO.findAll();
         
         return tout.stream()
-                .filter(v -> "VENDU".equals(v.getStatut())) // On garde que les vendues
-                .mapToDouble(Vehicule::getPrixVente)         // On prend juste le prix
-                .average()                                   // On fait la moyenne
-                .orElse(0.0);                                // 0 si rien vendu
+                .filter(v -> "VENDU".equals(v.getStatut())) 
+                .mapToDouble(Vehicule::getPrixVente)        
+                .average()                                   
+                .orElse(0.0);                                
     }
 
    
@@ -228,6 +230,30 @@ public class GarageService {
         System.out.println(" STATS STOCK :");
         System.out.println("- Électriques : " + nbElec);
         System.out.println("- Thermiques  : " + nbTherm);
+    }
+    
+    
+    public List<Vehicule> getTop3VoituresLuxe() {
+        return vehiculeDAO.findAll().stream()
+                .filter(v -> "DISPO".equals(v.getStatut()))
+                .sorted(Comparator.comparingDouble(Vehicule::getPrixVente).reversed())
+                .limit(3)
+                .collect(Collectors.toList());
+    }
+    
+    public List<Vehicule> rechercherParBudget(double budgetMax) {
+        return vehiculeDAO.findAll().stream()
+                .filter(v -> "DISPO".equals(v.getStatut()))
+                .filter(v -> v.getPrixVente() <= budgetMax)
+                .sorted(Comparator.comparingDouble(Vehicule::getPrixVente))
+                .collect(Collectors.toList());
+    }
+    
+    
+    public Map<String, List<Vehicule>> grouperVehiculesParMarque() {
+        return vehiculeDAO.findAll().stream()
+                .filter(v -> "DISPO".equals(v.getStatut()))
+                .collect(Collectors.groupingBy(Vehicule::getMarque));
     }
     
     
