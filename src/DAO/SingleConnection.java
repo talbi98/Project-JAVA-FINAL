@@ -13,7 +13,8 @@ public class SingleConnection {
 
         	
         	/*
-            String url = "jdbc:mysql://localhost:8889/\"+\"garage monaco v2\"+\"?serverTimezone=UTC\"";
+        	String url = "jdbc:mysql://localhost:8889/garage monaco v2 ?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
+			
 
 
             String user = "root";
