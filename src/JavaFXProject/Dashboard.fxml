@@ -7,87 +7,131 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.DashboardController">
+<BorderPane prefHeight="720.0" prefWidth="1080.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.DashboardController">
    
+   <!-- === MENU GAUCHE (SIDEBAR) === -->
    <left>
-      <VBox prefWidth="250.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+      <VBox prefWidth="240.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
+            <!-- Logo -->
+            <HBox styleClass="logo-box">
                <children>
-                  <Label style="-fx-background-color: #ff9800; -fx-text-fill: black; -fx-font-weight: bold; -fx-padding: 5 10; -fx-background-radius: 5;" text="G" />
-                  <Label styleClass="logo-label" text="GARAGE" />
-                  <Label styleClass="logo-accent" text="MGR" />
+                  <Label styleClass="logo-g" text="G" />
+                  <Label styleClass="logo-text" text=" GARAGE" />
+                  <Label styleClass="logo-text, logo-accent" text="MGR" />
                </children>
-               <VBox.margin>
-                  <Insets bottom="40.0" top="10.0" />
-               </VBox.margin>
             </HBox>
             
-            <Label style="-fx-text-fill: #666; -fx-font-size: 10px; -fx-padding: 0 0 0 10;" text="MENU PRINCIPAL" />
+            <Label style="-fx-text-fill: #555; -fx-font-size: 10px; -fx-padding: 0 0 5 10;" text="MENU PRINCIPAL" />
             
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Dashboard" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Stock &amp; Catalogue" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Ventes" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Atelier &amp; SAV" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Factures" />
+            <!-- Boutons de Navigation -->
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Tableau de Bord" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="menu-btn" text="Stock Véhicules" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="menu-btn" text="Ventes &amp; Clients" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="menu-btn" text="Atelier &amp; SAV" />
+            
+            <Pane VBox.vgrow="ALWAYS" /> <!-- Espaceur -->
+            
+            <!-- Profil Utilisateur -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 20 0 0 0; -fx-border-color: #333; -fx-border-width: 1 0 0 0;">
+               <children>
+                  <Label style="-fx-background-color: #333; -fx-background-radius: 20; -fx-text-fill: #ff9800; -fx-padding: 5 10; -fx-font-weight: bold;" text="A" />
+                  <VBox>
+                     <children>
+                        <Label style="-fx-text-fill: white; -fx-font-weight: bold;" text="Admin" />
+                        <Label style="-fx-text-fill: #666; -fx-font-size: 11px;" text="Directeur" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </left>
 
+   <!-- === CONTENU CENTRAL === -->
    <center>
       <VBox styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
             
-            <VBox spacing="5.0">
+            <!-- En-tête -->
+            <VBox>
                <children>
-                  <Label styleClass="header-title" text="Tableau de Bord" />
-                  <Label styleClass="header-subtitle" text="Vue d'ensemble de l'activité du garage." />
+                  <Label styleClass="page-title" text="Tableau de Bord" />
+                  <Label styleClass="page-subtitle" text="Vue d'ensemble de l'activité du garage." />
                </children>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
             </VBox>
 
+            <!-- Cartes KPI (Indicateurs) -->
             <HBox spacing="20.0">
                <children>
-                  <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                  <!-- Carte 1 : Prix Moyen -->
+                  <HBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="15.0" alignment="CENTER_LEFT">
                      <children>
-                        <Label fx:id="lblPrixMoyen" styleClass="stat-value" text="0 €" />
-                        <Label styleClass="stat-label" text="Prix Moyen Ventes" />
+                        <VBox styleClass="stat-icon-container, icon-orange">
+                           <Label style="-fx-text-fill: #ff9800; -fx-font-size: 20px;" text="€" />
+                        </VBox>
+                        <VBox>
+                           <Label fx:id="lblPrixMoyen" styleClass="stat-value" text="0 €" />
+                           <Label styleClass="stat-label" text="PRIX MOYEN VENTE" />
+                        </VBox>
                      </children>
-                  </VBox>
+                  </HBox>
                   
-                  <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                  <!-- Carte 2 : Stock -->
+                  <HBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="15.0" alignment="CENTER_LEFT">
                      <children>
-                        <Label fx:id="lblTotalStock" styleClass="stat-value" text="0" />
-                        <Label styleClass="stat-label" text="Véhicules Disponibles" />
+                        <VBox styleClass="stat-icon-container, icon-blue">
+                           <Label style="-fx-text-fill: #2196f3; -fx-font-size: 20px;" text="🚘" />
+                        </VBox>
+                        <VBox>
+                           <Label fx:id="lblTotalStock" styleClass="stat-value" text="0" />
+                           <Label styleClass="stat-label" text="VÉHICULES EN STOCK" />
+                        </VBox>
                      </children>
-                  </VBox>
+                  </HBox>
                   
-                  <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                  <!-- Carte 3 : Atelier -->
+                  <HBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="15.0" alignment="CENTER_LEFT">
                      <children>
-                        <Label fx:id="lblAtelier" styleClass="stat-value" text="--"/>
-                        <Label styleClass="stat-label" text="État Atelier" />
+                        <VBox styleClass="stat-icon-container, icon-red">
+                           <Label style="-fx-text-fill: #f44336; -fx-font-size: 20px;" text="🔧" />
+                        </VBox>
+                        <VBox>
+                           <Label fx:id="lblAtelier" styleClass="stat-value" text="0" />
+                           <Label styleClass="stat-label" text="EN ATELIER" />
+                        </VBox>
                      </children>
-                  </VBox>
+                  </HBox>
                </children>
             </HBox>
 
-            <Label styleClass="header-title" style="-fx-font-size: 20px; -fx-padding: 20 0 10 0;" text="Vitrine Prestige (Top 3)" />
-            
-            <TableView fx:id="tableTop3" prefHeight="200.0" VBox.vgrow="ALWAYS">
-              <columns>
-                <TableColumn fx:id="colMarque" prefWidth="150.0" text="Marque" />
-                <TableColumn fx:id="colModele" prefWidth="200.0" text="Modèle" />
-                <TableColumn fx:id="colPrix" prefWidth="150.0" text="Prix" />
-                <TableColumn fx:id="colStatut" prefWidth="100.0" text="Statut" />
-              </columns>
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
+            <!-- Tableau Top 3 -->
+            <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 0 15 0;">
+                     <children>
+                        <Label style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="Vitrine Prestige (Top 3)" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button style="-fx-background-color: transparent; -fx-text-fill: #ff9800; -fx-cursor: hand;" text="Voir tout &gt;" />
+                     </children>
+                  </HBox>
+                  
+                  <TableView fx:id="tableTop3" VBox.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="colMarque" prefWidth="150.0" text="MARQUE" />
+                      <TableColumn fx:id="colModele" prefWidth="200.0" text="MODÈLE" />
+                      <TableColumn fx:id="colPrix" prefWidth="150.0" text="PRIX VENTE" />
+                      <TableColumn fx:id="colStatut" prefWidth="120.0" text="STATUT" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </VBox>
 
          </children>
       </VBox>

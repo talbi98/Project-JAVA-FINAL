@@ -11,23 +11,22 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // 1. On charge le fichier FXML
+            // Chargement du Dashboard
             Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
-            
-            // 2. On crée la scène
             Scene scene = new Scene(root);
             
-            // 3. Configuration de la fenêtre
-            primaryStage.setTitle("Monaco Luxury Garage - Manager V1.0");
+            primaryStage.setTitle("Monaco Luxury Garage - Manager V2.0");
             primaryStage.setScene(scene);
-            primaryStage.setResizable(false); // On fige la taille pour garder le design propre
             
-            // 4. Affichage
+            // Empêcher que la fenêtre soit trop petite
+            primaryStage.setMinWidth(900);
+            primaryStage.setMinHeight(600);
+            
             primaryStage.show();
             
         } catch(Exception e) {
             e.printStackTrace();
-            System.err.println("Erreur : Impossible de charger Dashboard.fxml");
+            System.err.println("❌ Erreur critique : Impossible de charger l'interface.");
         }
     }
 
