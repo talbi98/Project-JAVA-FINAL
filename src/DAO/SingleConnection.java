@@ -11,7 +11,7 @@ public class SingleConnection {
 	private SingleConnection() {
         try {
 
-        	//OKKK
+        	//OKKK255
         	/*
         	String url = "jdbc:mysql://localhost:8889/garage monaco v2 ?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
 			
