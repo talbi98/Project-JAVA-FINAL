@@ -36,6 +36,6 @@ public class SingleConnection {
 		cn = null ;
 
 	}
-	//testsÒ
+	
 	
 }
