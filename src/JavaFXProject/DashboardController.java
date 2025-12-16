@@ -20,6 +20,7 @@ import java.util.List;
 public class DashboardController {
 
     // === 1. CONNEXION AU BACKEND ===
+    // Assure-toi que GarageService existe bien dans ton package Service
     private GarageService service = new GarageService();
 
     // === 2. ÉLÉMENTS FXML ===
@@ -34,7 +35,7 @@ public class DashboardController {
     @FXML private TableColumn<Vehicule, Double> colPrix;
     @FXML private TableColumn<Vehicule, String> colStatut;
 
-    // --- TABLEAU EMPLOYES (CORRECTION ICI : On utilise <Employe>, pas <Vehicule>) ---
+    // --- TABLEAU EMPLOYES ---
     @FXML private TableView<Employe> tableEmployes;
     @FXML private TableColumn<Employe, String> colEmpNom;
     @FXML private TableColumn<Employe, String> colEmpPrenom;
@@ -46,7 +47,7 @@ public class DashboardController {
         try {
             chargerIndicateurs();
             chargerTableauTop3();
-            chargerTableauEmployes(); // CORRECTION : Il faut appeler la méthode ici !
+            chargerTableauEmployes(); 
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Erreur chargement dashboard : " + e.getMessage());
@@ -58,15 +59,10 @@ public class DashboardController {
         double moyenne = service.calculerPrixMoyenVentes();
         lblPrixMoyen.setText(String.format("%,.0f €", moyenne));
 
-     // B. Total Stock (On filtre les voitures DISPO)
-
+        // B. Total Stock (On filtre les voitures DISPO)
         List<Vehicule> tout = service.listerToutLeGarage();
-
         long nbDispo = tout.stream().filter(v -> "DISPO".equals(v.getStatut())).count();
-
         lblTotalStock.setText(String.valueOf(nbDispo));
-
-
 
         // C. En Atelier
         long nbAtelier = tout.stream()
@@ -112,7 +108,6 @@ public class DashboardController {
         tableTop3.setItems(data);
     }
     
-    // J'ai renommé la méthode pour respecter les conventions (minuscule au début)
     private void chargerTableauEmployes() {
         // 1. Récupérer la liste
         List<Employe> lesEmployes = service.listerEmployes(); 
@@ -135,7 +130,6 @@ public class DashboardController {
         });
 
         // 4. Remplir le tableau
-        // CORRECTION : Maintenant ça marche car tableEmployes est typée <Employe>
         tableEmployes.setItems(data);
     }
 }
