@@ -11,24 +11,12 @@ public class SingleConnection {
 	private SingleConnection() {
         try {
 
-        	
-        	/*
-        	String url = "jdbc:mysql://localhost:8889/garage monaco v2 ?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
-			
-
-
-            String user = "root";
-
-
-            String password = "root"; 
-
-
-            cn = DriverManager.getConnection(url, user, password);
-           */
+        	//mac
+        	cn = DriverManager.getConnection("jdbc:mysql://localhost:8889/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "root");
             
         	
         	//ISMA:
-            cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
+           // cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
 
             System.out.println("Connexion à la base de données réussie !");
 
