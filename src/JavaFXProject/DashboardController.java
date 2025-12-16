@@ -1,7 +1,10 @@
 package JavaFXProject;
 
 import Service.GarageService;
+import Metier.Employe;
+import Metier.Mecanicien;
 import Metier.Vehicule;
+import Metier.Vendeur;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,7 +14,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 
 import java.util.List;
 
@@ -25,11 +27,18 @@ public class DashboardController {
     @FXML private Label lblTotalStock;
     @FXML private Label lblAtelier;
 
+    // --- TABLEAU TOP 3 (Vehicules) ---
     @FXML private TableView<Vehicule> tableTop3;
     @FXML private TableColumn<Vehicule, String> colMarque;
     @FXML private TableColumn<Vehicule, String> colModele;
     @FXML private TableColumn<Vehicule, Double> colPrix;
     @FXML private TableColumn<Vehicule, String> colStatut;
+
+    // --- TABLEAU EMPLOYES (CORRECTION ICI : On utilise <Employe>, pas <Vehicule>) ---
+    @FXML private TableView<Employe> tableEmployes;
+    @FXML private TableColumn<Employe, String> colEmpNom;
+    @FXML private TableColumn<Employe, String> colEmpPrenom;
+    @FXML private TableColumn<Employe, String> colEmpPoste;
 
     // === 3. INITIALISATION (Lancement auto) ===
     @FXML
@@ -37,6 +46,7 @@ public class DashboardController {
         try {
             chargerIndicateurs();
             chargerTableauTop3();
+            chargerTableauEmployes(); // CORRECTION : Il faut appeler la méthode ici !
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Erreur chargement dashboard : " + e.getMessage());
@@ -44,17 +54,21 @@ public class DashboardController {
     }
 
     private void chargerIndicateurs() {
-        // A. Prix Moyen (via méthode stream du Service)
+        // A. Prix Moyen
         double moyenne = service.calculerPrixMoyenVentes();
-        lblPrixMoyen.setText(String.format("%,.0f €", moyenne)); // Format 100 000 €
+        lblPrixMoyen.setText(String.format("%,.0f €", moyenne));
 
-        // B. Total Stock (On filtre les voitures DISPO)
+     // B. Total Stock (On filtre les voitures DISPO)
+
         List<Vehicule> tout = service.listerToutLeGarage();
+
         long nbDispo = tout.stream().filter(v -> "DISPO".equals(v.getStatut())).count();
+
         lblTotalStock.setText(String.valueOf(nbDispo));
 
-        // C. En Atelier (On compte celles qui ne sont ni DISPO ni VENDU)
-        // Astuce : Si tu n'as pas de méthode spécifique, on filtre la liste complète
+
+
+        // C. En Atelier
         long nbAtelier = tout.stream()
                 .filter(v -> !"DISPO".equals(v.getStatut()) && !"VENDU".equals(v.getStatut()))
                 .count();
@@ -62,16 +76,13 @@ public class DashboardController {
     }
 
     private void chargerTableauTop3() {
-        // 1. Récupération des données Backend
         List<Vehicule> top3 = service.getTop3VoituresLuxe();
         ObservableList<Vehicule> data = FXCollections.observableArrayList(top3);
 
-        // 2. Liaison Colonnes <-> Objet Métier
         colMarque.setCellValueFactory(new PropertyValueFactory<>("marque"));
         colModele.setCellValueFactory(new PropertyValueFactory<>("modele"));
         colPrix.setCellValueFactory(new PropertyValueFactory<>("prixVente"));
         
-        // Colonne Statut avec rendu personnalisé (Badges de couleur)
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         colStatut.setCellFactory(column -> new TableCell<Vehicule, String>() {
             @Override
@@ -98,7 +109,33 @@ public class DashboardController {
             }
         });
 
-        // 3. Affichage
         tableTop3.setItems(data);
+    }
+    
+    // J'ai renommé la méthode pour respecter les conventions (minuscule au début)
+    private void chargerTableauEmployes() {
+        // 1. Récupérer la liste
+        List<Employe> lesEmployes = service.listerEmployes(); 
+        ObservableList<Employe> data = FXCollections.observableArrayList(lesEmployes);
+
+        // 2. Lier les colonnes
+        colEmpNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colEmpPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+
+        // 3. Gestion intelligente du "Poste"
+        colEmpPoste.setCellValueFactory(cellData -> {
+            Employe e = cellData.getValue();
+            if (e instanceof Vendeur) {
+                return new SimpleStringProperty("Vendeur");
+            } else if (e instanceof Mecanicien) {
+                return new SimpleStringProperty("Mécanicien");
+            } else {
+                return new SimpleStringProperty("Autre");
+            }
+        });
+
+        // 4. Remplir le tableau
+        // CORRECTION : Maintenant ça marche car tableEmployes est typée <Employe>
+        tableEmployes.setItems(data);
     }
 }

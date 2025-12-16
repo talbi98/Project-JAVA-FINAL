@@ -254,4 +254,9 @@ public class GarageService {
     
     
     
+    public List<Employe> listerEmployes() {
+        return employeDAO.findAll(); 
+    }
+    
+    
 }
