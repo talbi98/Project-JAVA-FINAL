@@ -9,13 +9,26 @@ public class SingleConnection {
 	private static Connection cn ;
 		
 	private SingleConnection() {
-		try {
-			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+"garage monaco v2"+"?serverTimezone=UTC", "root", "");
-			
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+
+            String url = "jdbc:mysql://localhost:8889/garage monaco v2 ?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
+
+
+            String user = "root";
+
+
+            String password = "root"; 
+
+
+            cn = DriverManager.getConnection(url, user, password);
+
+            System.out.println("Connexion à la base de données réussie !");
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+            System.err.println("Erreur de connexion : Vérifiez que MAMP est lancé et que le port est bien 8889.");
+        }
+    }
 	
 	public static Connection getInstance() {
 		if(cn == null) {
