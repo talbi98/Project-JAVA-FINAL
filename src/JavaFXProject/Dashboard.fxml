@@ -28,7 +28,10 @@
             <Label style="-fx-text-fill: #555; -fx-font-size: 11px; -fx-padding: 0 0 5 10; -fx-font-weight: bold;" text="MENU PRINCIPAL" />
             
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Tableau de Bord" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Stock Véhicules" />
+            
+            <!-- BOUTON MODIFIÉ ICI -->
+            <Button fx:id="btnStock" maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Stock Véhicules" onAction="#handleBtnStock" />
+            
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Ventes &amp; Clients" />
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Atelier &amp; SAV" />
             

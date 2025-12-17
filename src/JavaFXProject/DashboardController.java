@@ -8,13 +8,19 @@ import Metier.Vendeur;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 public class DashboardController {
@@ -51,6 +57,25 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Erreur chargement dashboard : " + e.getMessage());
+        }
+    }
+
+    // === 4. NAVIGATION (Changement de page) ===
+    @FXML
+    private void handleBtnStock(ActionEvent event) {
+        try {
+            // On charge le fichier Stock.fxml
+            Parent stockView = FXMLLoader.load(getClass().getResource("Stock.fxml"));
+            
+            // On récupère la fenêtre actuelle (la scène)
+            Scene currentScene = ((Node) event.getSource()).getScene();
+            
+            // On remplace le contenu par la vue du Stock
+            currentScene.setRoot(stockView);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur : Impossible de trouver Stock.fxml !");
         }
     }
 

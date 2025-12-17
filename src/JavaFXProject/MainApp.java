@@ -26,7 +26,7 @@ public class MainApp extends Application {
             
         } catch(Exception e) {
             e.printStackTrace();
-            System.err.println("❌ Erreur critique : Impossible de charger l'interface.");
+            System.err.println(" Erreur critique : Impossible de charger l'interface.");
         }
     }
 
