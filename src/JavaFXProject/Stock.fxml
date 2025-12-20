@@ -13,10 +13,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<!-- CONTROLLER LIE : JavaFXProject.StockController -->
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.StockController">
    
-   <!-- === MENU GAUCHE (IDENTIQUE AU DASHBOARD) === -->
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
@@ -30,7 +28,6 @@
             
             <Label style="-fx-text-fill: #555; -fx-font-size: 11px; -fx-padding: 0 0 5 10; -fx-font-weight: bold;" text="MENU PRINCIPAL" />
             
-            <!-- Note le changement de classe active ici -->
             <Button fx:id="btnDashboard" maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Tableau de Bord" onAction="#handleBtnDashboard" />
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Stock Véhicules" />
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Ventes &amp; Clients" />
@@ -53,12 +50,9 @@
       </VBox>
    </left>
 
-   <!-- === CONTENU CENTRAL (SPÉCIFIQUE STOCK) === -->
    <center>
       <VBox spacing="25.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
-            
-            <!-- En-tête avec Titre -->
             <VBox>
                <children>
                   <Label styleClass="page-title" text="Gestion du Stock" />
@@ -66,26 +60,16 @@
                </children>
             </VBox>
             
-            <!-- BARRE D'OUTILS (Recherche, Filtres, Bouton) -->
             <HBox alignment="CENTER_LEFT" spacing="15.0">
                 <children>
-                    <!-- Barre de recherche -->
-                   
-
-                    <!-- Filtre Marque -->
-                    <ComboBox fx:id="comboMarque" promptText="Marque : Toutes" prefWidth="150.0" style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-background-radius: 8;" />
-
-                    <!-- Filtre Statut -->
-                    <ComboBox fx:id="comboStatut" promptText="Statut : Tous" prefWidth="150.0" style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-background-radius: 8;" />
-
+                  
+                    <ComboBox fx:id="comboMarque" promptText="Marque" prefWidth="150.0" style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-background-radius: 8;" />
+                    <ComboBox fx:id="comboStatut" promptText="Statut" prefWidth="150.0" style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-background-radius: 8;" />
                     <Pane HBox.hgrow="ALWAYS" />
-
-                    <!-- Bouton Ajouter -->
                     <Button text="+ Ajouter Véhicule" style="-fx-background-color: #ff9800; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;" />
                 </children>
             </HBox>
 
-            <!-- Grand Tableau Stock -->
             <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
                <children>
                   <TableView fx:id="tableStock" VBox.vgrow="ALWAYS">
@@ -93,7 +77,6 @@
                       <TableColumn fx:id="colId" prefWidth="50.0" text="#" sortable="false" />
                       <TableColumn fx:id="colMarque" prefWidth="150.0" text="MARQUE" sortable="false" />
                       <TableColumn fx:id="colModele" prefWidth="200.0" text="MODÈLE" sortable="false" />
-                      <TableColumn fx:id="colAnnee" prefWidth="100.0" text="ANNÉE" sortable="false" />
                       <TableColumn fx:id="colPrix" prefWidth="150.0" text="PRIX VENTE" sortable="false" />
                       <TableColumn fx:id="colStatut" prefWidth="120.0" text="STATUT" sortable="false" />
                     </columns>
@@ -103,7 +86,6 @@
                   </TableView>
                </children>
             </VBox>
-
          </children>
       </VBox>
    </center>
