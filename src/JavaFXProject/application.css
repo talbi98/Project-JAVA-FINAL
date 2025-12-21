@@ -182,3 +182,35 @@
     -fx-background-color: #333333;
     -fx-background-radius: 5;
 }
+
+/* === PREMIUM TAB PANE === */
+.premium-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.premium-tab-pane .tab {
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 10 20;
+    -fx-margin: 0 5 0 0;
+}
+
+.premium-tab-pane .tab:selected {
+    -fx-background-color: #2a2a2a;
+    -fx-border-color: #ff9800 transparent transparent transparent;
+    -fx-border-width: 3 0 0 0;
+}
+
+.premium-tab-pane .tab .tab-label {
+    -fx-text-fill: #888;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.premium-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #ff9800;
+}
+
+.premium-tab-pane .tab-content-area {
+    -fx-background-color: transparent;
+}

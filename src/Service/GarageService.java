@@ -196,7 +196,17 @@ public class GarageService {
         System.out.println("$$$ TRANSACTION REUSSIE : " + v.getMarque() + " vendue à " + c.getNom());
         return true;
     }
-    
+    /*
+    public double calculerChiffreAffaires() {
+        // On récupère toutes les ventes réelles enregistrées en BDD
+        List<Vente> toutesLesVentes = VenteDAO.findAll(); 
+        
+        // On fait la somme des montants finaux de la table 'vente'
+        return toutesLesVentes.stream()
+                .mapToDouble(Vente::getMontantFinal)
+                .sum(); // .sum() pour le CA, .average() pour le prix moyen
+    }
+    */
     
     
     public double calculerPrixMoyenVentes() {
@@ -256,6 +266,9 @@ public class GarageService {
     
     public List<Employe> listerEmployes() {
         return employeDAO.findAll(); 
+    }
+    public List<Vente> listerVentes() {
+        return VenteDAO.findAll();
     }
     
     

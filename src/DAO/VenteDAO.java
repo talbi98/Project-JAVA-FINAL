@@ -49,6 +49,7 @@ public class VenteDAO extends DAO<Vente, Integer> {
 
     
     public List<Vente> findAll() {
+    	open();
         List<Vente> ventes = new ArrayList<>();
         String sql = "SELECT * FROM vente";
 

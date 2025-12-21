@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.CommerceController">
+   
+   <!-- === BARRE LATÉRALE (SIDEBAR) === -->
+   <left>
+      <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+         <children>
+            <!-- Logo Section -->
+            <HBox styleClass="logo-box">
+               <children>
+                  <Label styleClass="logo-g" text="G" />
+                  <Label styleClass="logo-text" text=" GARAGE" />
+                  <Label styleClass="logo-text, logo-accent" text="MGR" />
+               </children>
+            </HBox>
+            
+            <Label style="-fx-text-fill: #555; -fx-font-size: 11px; -fx-padding: 20 0 5 10; -fx-font-weight: bold; -fx-letter-spacing: 2px;" text="MENU PRINCIPAL" />
+            
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnDashboard" styleClass="menu-btn" text="Tableau de Bord" />
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnStock" styleClass="menu-btn" text="Stock Véhicules" />
+            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Ventes &amp; Clients" />
+            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Atelier &amp; SAV" />
+            
+            <Pane VBox.vgrow="ALWAYS" /> 
+            
+            <!-- Profil Admin -->
+            <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-padding: 20 0 0 0; -fx-border-color: #333; -fx-border-width: 1 0 0 0;">
+               <children>
+                  <Label style="-fx-background-color: #333; -fx-background-radius: 20; -fx-text-fill: #ff9800; -fx-padding: 8 14; -fx-font-weight: bold; -fx-font-size: 14px;" text="A" />
+                  <VBox>
+                     <children>
+                        <Label style="-fx-text-fill: white; -fx-font-weight: bold;" text="Admin" />
+                        <Label style="-fx-text-fill: #666; -fx-font-size: 11px;" text="Directeur" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </left>
+
+   <!-- === ZONE CENTRALE === -->
+   <center>
+      <VBox spacing="30.0" styleClass="content-area" BorderPane.alignment="CENTER">
+         <children>
+            <!-- Titre de la page -->
+            <VBox spacing="5.0">
+               <children>
+                  <Label styleClass="page-title" text="Commerce &amp; CRM" />
+                  <Label styleClass="page-subtitle" text="Suivi des transactions et gestion de la relation client de prestige." />
+               </children>
+            </VBox>
+
+            <!-- Navigation par Onglets -->
+            <TabPane fx:id="tabPaneCommerce" styleClass="premium-tab-pane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+              <tabs>
+                
+                <!-- ONGLET 1 : JOURNAL DES VENTES -->
+                <Tab text="JOURNAL DES VENTES">
+                  <content>
+                    <VBox spacing="20.0">
+                       <children>
+                          <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                             <children>
+                                <Button onAction="#handleNouvelleVente" style="-fx-background-color: #ff9800; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20;" text="+ ENREGISTRER UNE VENTE" />
+                             </children>
+                          </HBox>
+                          
+                          <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
+                             <children>
+                                <TableView fx:id="tableVentes" VBox.vgrow="ALWAYS">
+                                  <columns>
+                                    <TableColumn fx:id="colVenteRef" prefWidth="100.0" text="RÉFÉRENCE" />
+                                    <TableColumn fx:id="colVenteDate" prefWidth="130.0" text="DATE" />
+                                    <TableColumn fx:id="colVenteVehicule" prefWidth="300.0" text="VÉHICULE" />
+                                    <TableColumn fx:id="colVenteClient" prefWidth="250.0" text="ACHETEUR" />
+                                    <TableColumn fx:id="colVenteMontant" prefWidth="180.0" text="MONTANT FINAL" />
+                                  </columns>
+                                   <columnResizePolicy>
+                                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                   </columnResizePolicy>
+                                </TableView>
+                             </children>
+                          </VBox>
+                       </children>
+                       <padding>
+                          <Insets top="25.0" />
+                       </padding>
+                    </VBox>
+                  </content>
+                </Tab>
+
+                <!-- ONGLET 2 : PORTEFEUILLE CLIENTS -->
+                <Tab text="PORTEFEUILLE CLIENTS">
+                  <content>
+                    <VBox spacing="20.0">
+                       <children>
+                          <HBox alignment="CENTER_LEFT" spacing="15.0">
+                             <children>
+                                <TextField fx:id="txtChercherClient" prefWidth="350.0" promptText="Rechercher un client (Nom, Email...)" style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 15; -fx-border-color: #333; -fx-border-radius: 8;" />
+                                <Pane HBox.hgrow="ALWAYS" />
+                                <Button onAction="#handleNouveauClient" style="-fx-background-color: #333; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-border-color: #444;" text="+ NOUVEAU CLIENT" />
+                             </children>
+                          </HBox>
+                          
+                          <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
+                             <children>
+                                <TableView fx:id="tableClients" VBox.vgrow="ALWAYS">
+                                  <columns>
+                                    <TableColumn fx:id="colClientNom" prefWidth="250.0" text="NOM COMPLET" />
+                                    <TableColumn fx:id="colClientEmail" prefWidth="300.0" text="COORDONNÉES" />
+                                    <TableColumn fx:id="colClientTel" prefWidth="180.0" text="TÉLÉPHONE" />
+                                    <TableColumn fx:id="colClientVip" prefWidth="150.0" text="STATUT VIP" />
+                                  </columns>
+                                   <columnResizePolicy>
+                                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                   </columnResizePolicy>
+                                </TableView>
+                             </children>
+                          </VBox>
+                       </children>
+                       <padding>
+                          <Insets top="25.0" />
+                       </padding>
+                    </VBox>
+                  </content>
+                </Tab>
+                
+              </tabs>
+            </TabPane>
+         </children>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </VBox>
+   </center>
+</BorderPane>

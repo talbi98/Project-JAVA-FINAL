@@ -21,12 +21,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class DashboardController {
 
     // === 1. CONNEXION AU BACKEND ===
-    // Assure-toi que GarageService existe bien dans ton package Service
     private GarageService service = new GarageService();
 
     // === 2. ÉLÉMENTS FXML ===
@@ -47,7 +47,7 @@ public class DashboardController {
     @FXML private TableColumn<Employe, String> colEmpPrenom;
     @FXML private TableColumn<Employe, String> colEmpPoste;
 
-    // === 3. INITIALISATION (Lancement auto) ===
+    // === 3. INITIALISATION ===
     @FXML
     public void initialize() {
         try {
@@ -60,38 +60,55 @@ public class DashboardController {
         }
     }
 
-    // === 4. NAVIGATION (Changement de page) ===
+    // === 4. NAVIGATION ===
+    
     @FXML
     private void handleBtnStock(ActionEvent event) {
+        System.out.println("Clic sur bouton Stock...");
+        switchScene(event, "Stock.fxml");
+    }
+
+    @FXML
+    private void handleBtnCommerce(ActionEvent event) {
+        System.out.println("Clic sur bouton Commerce...");
+        switchScene(event, "Commerce.fxml");
+    }
+
+    /**
+     * Méthode utilitaire pour changer de vue de manière sécurisée
+     */
+    private void switchScene(ActionEvent event, String fxmlFile) {
         try {
-            // On charge le fichier Stock.fxml
-            Parent stockView = FXMLLoader.load(getClass().getResource("Stock.fxml"));
+            URL resource = getClass().getResource(fxmlFile);
+            if (resource == null) {
+                System.err.println("ERREUR : Le fichier " + fxmlFile + " est introuvable dans le dossier JavaFXProject.");
+                return;
+            }
             
-            // On récupère la fenêtre actuelle (la scène)
-            Scene currentScene = ((Node) event.getSource()).getScene();
-            
-            // On remplace le contenu par la vue du Stock
-            currentScene.setRoot(stockView);
+            Parent root = FXMLLoader.load(resource);
+            Scene scene = ((Node) event.getSource()).getScene();
+            scene.setRoot(root);
+            System.out.println("Navigation réussie vers : " + fxmlFile);
             
         } catch (IOException e) {
+            System.err.println("Erreur critique lors du chargement de " + fxmlFile);
             e.printStackTrace();
-            System.err.println("Erreur : Impossible de trouver Stock.fxml !");
         }
     }
 
     private void chargerIndicateurs() {
-        // A. Prix Moyen
-        double moyenne = service.calculerPrixMoyenVentes();
-        lblPrixMoyen.setText(String.format("%,.0f €", moyenne));
+        // Chiffre d'Affaires réel
+        double caTotal = service.calculerPrixMoyenVentes();
+        lblPrixMoyen.setText(String.format("%,.0f €", caTotal));
 
-        // B. Total Stock (On filtre les voitures DISPO)
+        // Total Stock Disponible
         List<Vehicule> tout = service.listerToutLeGarage();
         long nbDispo = tout.stream().filter(v -> "DISPO".equals(v.getStatut())).count();
         lblTotalStock.setText(String.valueOf(nbDispo));
 
-        // C. En Atelier
+        // En Atelier
         long nbAtelier = tout.stream()
-                .filter(v -> !"DISPO".equals(v.getStatut()) && !"VENDU".equals(v.getStatut()))
+                .filter(v -> "ATELIER".equals(v.getStatut()) || "EN_COURS".equals(v.getStatut()))
                 .count();
         lblAtelier.setText(String.valueOf(nbAtelier));
     }
@@ -112,7 +129,6 @@ public class DashboardController {
                 if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
-                    setStyle("");
                 } else {
                     Label badge = new Label(item);
                     badge.setStyle("-fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 5;");
@@ -134,15 +150,12 @@ public class DashboardController {
     }
     
     private void chargerTableauEmployes() {
-        // 1. Récupérer la liste
         List<Employe> lesEmployes = service.listerEmployes(); 
         ObservableList<Employe> data = FXCollections.observableArrayList(lesEmployes);
 
-        // 2. Lier les colonnes
         colEmpNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colEmpPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
 
-        // 3. Gestion intelligente du "Poste"
         colEmpPoste.setCellValueFactory(cellData -> {
             Employe e = cellData.getValue();
             if (e instanceof Vendeur) {
@@ -154,7 +167,6 @@ public class DashboardController {
             }
         });
 
-        // 4. Remplir le tableau
         tableEmployes.setItems(data);
     }
 }
