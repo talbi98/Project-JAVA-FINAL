@@ -183,7 +183,7 @@ public class VehiculeDAO extends DAO<Vehicule, Integer> {
             
            
             ps.setString(5, v.getStatut()); 
-            // -----------------------------
+           
 
             if (v instanceof VoitureThermique) {
                 VoitureThermique vt = (VoitureThermique) v;

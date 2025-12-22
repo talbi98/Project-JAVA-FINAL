@@ -16,11 +16,11 @@
 
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.CommerceController">
    
-   <!-- === BARRE LATÉRALE (SIDEBAR) === -->
+  
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
-            <!-- Logo Section -->
+           
             <HBox styleClass="logo-box">
                <children>
                   <Label styleClass="logo-g" text="G" />
@@ -38,7 +38,7 @@
             
             <Pane VBox.vgrow="ALWAYS" /> 
             
-            <!-- Profil Admin -->
+          
             <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-padding: 20 0 0 0; -fx-border-color: #333; -fx-border-width: 1 0 0 0;">
                <children>
                   <Label style="-fx-background-color: #333; -fx-background-radius: 20; -fx-text-fill: #ff9800; -fx-padding: 8 14; -fx-font-weight: bold; -fx-font-size: 14px;" text="A" />
@@ -54,11 +54,11 @@
       </VBox>
    </left>
 
-   <!-- === ZONE CENTRALE === -->
+  
    <center>
       <VBox spacing="30.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
-            <!-- Titre de la page -->
+          
             <VBox spacing="5.0">
                <children>
                   <Label styleClass="page-title" text="Commerce &amp; CRM" />
@@ -66,11 +66,11 @@
                </children>
             </VBox>
 
-            <!-- Navigation par Onglets -->
+           
             <TabPane fx:id="tabPaneCommerce" styleClass="premium-tab-pane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
               <tabs>
                 
-                <!-- ONGLET 1 : JOURNAL DES VENTES -->
+               
                 <Tab text="JOURNAL DES VENTES">
                   <content>
                     <VBox spacing="20.0">
@@ -105,7 +105,7 @@
                   </content>
                 </Tab>
 
-                <!-- ONGLET 2 : PORTEFEUILLE CLIENTS -->
+               
                 <Tab text="PORTEFEUILLE CLIENTS">
                   <content>
                     <VBox spacing="20.0">

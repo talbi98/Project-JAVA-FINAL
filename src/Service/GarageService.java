@@ -170,7 +170,7 @@ public class GarageService {
         Client c = clientDAO.findById(idClient);
         Employe e = employeDAO.findById(idVendeur);
         
-        // 2. Vérifications de sécurité (Est-ce que tout existe ?)
+        
         if (v == null) throw new Exception("Véhicule introuvable (ID " + idVehicule + ")");
         if (c == null) throw new Exception("Client introuvable (ID " + idClient + ")");
         if (e == null) throw new Exception("Vendeur introuvable (ID " + idVendeur + ")");

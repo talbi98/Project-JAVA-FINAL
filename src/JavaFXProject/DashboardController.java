@@ -26,28 +26,28 @@ import java.util.List;
 
 public class DashboardController {
 
-    // === 1. CONNEXION AU BACKEND ===
+    
     private GarageService service = new GarageService();
 
-    // === 2. ÉLÉMENTS FXML ===
+   
     @FXML private Label lblPrixMoyen;
     @FXML private Label lblTotalStock;
     @FXML private Label lblAtelier;
 
-    // --- TABLEAU TOP 3 (Vehicules) ---
+   
     @FXML private TableView<Vehicule> tableTop3;
     @FXML private TableColumn<Vehicule, String> colMarque;
     @FXML private TableColumn<Vehicule, String> colModele;
     @FXML private TableColumn<Vehicule, Double> colPrix;
     @FXML private TableColumn<Vehicule, String> colStatut;
 
-    // --- TABLEAU EMPLOYES ---
+   
     @FXML private TableView<Employe> tableEmployes;
     @FXML private TableColumn<Employe, String> colEmpNom;
     @FXML private TableColumn<Employe, String> colEmpPrenom;
     @FXML private TableColumn<Employe, String> colEmpPoste;
 
-    // === 3. INITIALISATION ===
+   
     @FXML
     public void initialize() {
         try {
@@ -60,7 +60,7 @@ public class DashboardController {
         }
     }
 
-    // === 4. NAVIGATION ===
+    
     
     @FXML
     private void handleBtnStock(ActionEvent event) {
@@ -74,9 +74,7 @@ public class DashboardController {
         switchScene(event, "Commerce.fxml");
     }
 
-    /**
-     * Méthode utilitaire pour changer de vue de manière sécurisée
-     */
+   
     private void switchScene(ActionEvent event, String fxmlFile) {
         try {
             URL resource = getClass().getResource(fxmlFile);
@@ -97,16 +95,16 @@ public class DashboardController {
     }
 
     private void chargerIndicateurs() {
-        // Chiffre d'Affaires réel
+     
         double caTotal = service.calculerPrixMoyenVentes();
         lblPrixMoyen.setText(String.format("%,.0f €", caTotal));
 
-        // Total Stock Disponible
+       
         List<Vehicule> tout = service.listerToutLeGarage();
         long nbDispo = tout.stream().filter(v -> "DISPO".equals(v.getStatut())).count();
         lblTotalStock.setText(String.valueOf(nbDispo));
 
-        // En Atelier
+       
         long nbAtelier = tout.stream()
                 .filter(v -> "ATELIER".equals(v.getStatut()) || "EN_COURS".equals(v.getStatut()))
                 .count();

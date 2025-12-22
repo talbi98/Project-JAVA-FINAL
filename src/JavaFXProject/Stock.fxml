@@ -12,14 +12,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- Lien avec le contrôleur Java -->
+
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.StockController">
    
-   <!-- === BARRE LATÉRALE (SIDEBAR) === -->
+  
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
-            <!-- Bloc Logo -->
+           
             <HBox styleClass="logo-box">
                <children>
                   <Label styleClass="logo-g" text="G" />
@@ -30,7 +30,7 @@
             
             <Label style="-fx-text-fill: #555; -fx-font-size: 11px; -fx-padding: 20 0 5 10; -fx-font-weight: bold; -fx-letter-spacing: 1px;" text="MENU PRINCIPAL" />
             
-            <!-- Boutons de Navigation -->
+           
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnDashboard" styleClass="menu-btn" text="Tableau de Bord" />
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Stock Véhicules" />
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnCommerce" styleClass="menu-btn" text="Ventes &amp; Clients" />
@@ -38,7 +38,7 @@
             
             <Pane VBox.vgrow="ALWAYS" /> 
             
-            <!-- Pied de Sidebar (Profil Admin) -->
+           
             <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-padding: 20 0 0 0; -fx-border-color: #333; -fx-border-width: 1 0 0 0;">
                <children>
                   <Label style="-fx-background-color: #333; -fx-background-radius: 20; -fx-text-fill: #ff9800; -fx-padding: 8 14; -fx-font-weight: bold; -fx-font-size: 14px;" text="A" />
@@ -54,11 +54,11 @@
       </VBox>
    </left>
 
-   <!-- === CONTENU CENTRAL === -->
+  
    <center>
       <VBox spacing="25.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
-            <!-- En-tête de page -->
+          
             <VBox spacing="5.0">
                <children>
                   <Label styleClass="page-title" text="Gestion du Stock" />
@@ -66,24 +66,24 @@
                </children>
             </VBox>
             
-            <!-- BARRE D'OUTILS (Filtres et Recherche) -->
+           
             <HBox alignment="CENTER_LEFT" spacing="15.0">
                 <children>
-                    <!-- Champ de recherche textuelle -->
+                   
                     <TextField fx:id="txtRecherche" prefWidth="300.0" promptText="Rechercher un modèle ou une marque..." style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 15; -fx-border-color: #333; -fx-border-radius: 8;" />
                     
-                    <!-- Filtres par catégorie -->
+                  
                     <ComboBox fx:id="comboMarque" prefWidth="160.0" promptText="Marque" style="-fx-background-color: #1e1e1e; -fx-text-fill: white;" />
                     <ComboBox fx:id="comboStatut" prefWidth="160.0" promptText="Statut" style="-fx-background-color: #1e1e1e; -fx-text-fill: white;" />
                     
                     <Pane HBox.hgrow="ALWAYS" />
                     
-                    <!-- Bouton Action -->
+                   
                     <Button onAction="#handleAjouterVehicule" style="-fx-background-color: #ff9800; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 20;" text="+ AJOUTER VÉHICULE" />
                 </children>
             </HBox>
 
-            <!-- ZONE DU TABLEAU (CARD STYLE) -->
+          
             <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
                <children>
                   <TableView fx:id="tableStock" VBox.vgrow="ALWAYS">

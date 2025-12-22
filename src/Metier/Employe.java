@@ -6,7 +6,7 @@ public abstract class Employe {
     protected String prenom;
     protected String login;
     protected String password;
-    protected String typeEmploye; // "vendeur" ou alors "mecanicien"
+    protected String typeEmploye; 
 
     public Employe(int id, String nom, String prenom, String login, String password, String typeEmploye) {
         this.id = id;

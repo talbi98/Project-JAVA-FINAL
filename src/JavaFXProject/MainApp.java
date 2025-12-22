@@ -8,17 +8,17 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    @Override
+   
     public void start(Stage primaryStage) {
         try {
-            // Chargement du Dashboard
+           
             Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
             Scene scene = new Scene(root);
             
             primaryStage.setTitle("Monaco Luxury Garage - Manager V2.0");
             primaryStage.setScene(scene);
             
-            // Empêcher que la fenêtre soit trop petite
+            
             primaryStage.setMinWidth(900);
             primaryStage.setMinHeight(600);
             

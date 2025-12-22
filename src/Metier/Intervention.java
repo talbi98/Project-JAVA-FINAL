@@ -13,7 +13,7 @@ public class Intervention implements IFacturable {
     private Mecanicien mecanicien;
     private double prixMainOeuvre;
 
-    // Constructeur complet (lecture BDD)
+   
     public Intervention(int id, Date dateDebut, Date dateFin, String description, String statut, Vehicule vehicule, Mecanicien mecanicien, double prixMainOeuvre) {
         this.id = id;
         this.dateDebut = dateDebut;
@@ -25,7 +25,7 @@ public class Intervention implements IFacturable {
         this.prixMainOeuvre = prixMainOeuvre;
     }
 
-    // Constructeur simplifié (Création)
+  
     public Intervention(Vehicule vehicule, Mecanicien mecanicien, String description, double prixMainOeuvre) {
         this.vehicule = vehicule;
         this.mecanicien = mecanicien;
@@ -35,7 +35,7 @@ public class Intervention implements IFacturable {
         this.statut = "EN_COURS";
     }
 
-    // Getters / Setters
+   
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public Date getDateDebut() { return dateDebut; }
@@ -48,16 +48,16 @@ public class Intervention implements IFacturable {
     public Mecanicien getMecanicien() { return mecanicien; }
     public double getPrixMainOeuvre() { return prixMainOeuvre; }
     
-    // --- C'EST ICI QUE TU AVAIS LE PROBLEME (INTERFACE IFACTURABLE) ---
+    
 
     @Override
     public double getMontantTotal() {
-        return this.prixMainOeuvre; // Il faut bien renvoyer le prix !
+        return this.prixMainOeuvre; 
     }
 
     @Override
     public String getDescriptionFacture() {
-        // Sécurité pour éviter "null"
+       
         String desc = (description != null) ? description : "Intervention standard";
         String immat = (vehicule != null) ? vehicule.getImmatriculation() : "Inconnue";
         return "Atelier : " + desc + " sur " + immat;
@@ -65,8 +65,7 @@ public class Intervention implements IFacturable {
 
     @Override
     public Client getClientFacture() {
-        // Comme l'intervention n'a pas de client direct, on renvoie null
-        // Le service d'impression affichera "Client de passage", c'est correct.
+        
         return null; 
     }
 

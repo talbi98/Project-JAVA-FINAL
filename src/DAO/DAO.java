@@ -23,7 +23,7 @@ public abstract class DAO<T , K> {
 		 try {
 			stmt =  connect.createStatement();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	 }

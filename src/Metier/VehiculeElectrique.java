@@ -34,7 +34,7 @@ public class VehiculeElectrique extends Vehicule {
 
 	@Override
     public double calculerTaxeLuxe() {
-        // a Monaco pas de taxe sur l'électrique !
+       
         return 0.0;
     }
 }

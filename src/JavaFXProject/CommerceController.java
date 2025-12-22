@@ -21,7 +21,7 @@ public class CommerceController {
 
     private GarageService service = new GarageService();
 
-    // --- Table Ventes ---
+    
     @FXML private TableView<Vente> tableVentes;
     @FXML private TableColumn<Vente, String> colVenteRef;
     @FXML private TableColumn<Vente, java.sql.Date> colVenteDate;
@@ -47,18 +47,18 @@ public class CommerceController {
     }
 
     private void setupColonnes() {
-        // --- SECTION VENTES (Appel direct des méthodes de ta classe) ---
+      
 
-        // CORRECTION CRUCIALE : On appelle getdateVente() avec le 'd' minuscule comme dans ta classe
+      
         colVenteDate.setCellValueFactory(cellData -> {
             return new SimpleObjectProperty<>(cellData.getValue().getdateVente());
         });
 
-        // Référence : On utilise getReference() qui est dans ton interface/classe
+      
         colVenteRef.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getReference()));
 
-        // Véhicule : On appelle getVehicule()
+       
         colVenteVehicule.setCellValueFactory(cellData -> {
             if (cellData.getValue().getVehicule() != null) {
                 return new SimpleStringProperty(
@@ -69,7 +69,7 @@ public class CommerceController {
             return new SimpleStringProperty("N/A");
         });
 
-        // Client : On appelle getClient()
+       
         colVenteClient.setCellValueFactory(cellData -> {
             if (cellData.getValue().getClient() != null) {
                 return new SimpleStringProperty(
@@ -80,13 +80,13 @@ public class CommerceController {
             return new SimpleStringProperty("Inconnu");
         });
 
-        // Montant : On appelle getMontantFinal()
+       
         colVenteMontant.setCellValueFactory(cellData -> 
             new SimpleObjectProperty<>(cellData.getValue().getMontantFinal()));
 
-        // Style pour le montant
+       
         colVenteMontant.setCellFactory(column -> new TableCell<Vente, Double>() {
-            @Override
+            
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -98,7 +98,7 @@ public class CommerceController {
             }
         });
 
-        // --- SECTION CLIENTS ---
+       
         colClientNom.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getNom() + " " + cellData.getValue().getPrenom()));
         colClientEmail.setCellValueFactory(cellData -> 
@@ -115,21 +115,21 @@ public class CommerceController {
         tableClients.setItems(FXCollections.observableArrayList(clients));
     }
 
-    // === GESTION DES ÉVÉNEMENTS (RÉSOUT L'ERREUR DE CHARGEMENT FXML) ===
+   
 
     @FXML
     private void handleNouvelleVente(ActionEvent event) {
         System.out.println("Action : Ouverture du formulaire de nouvelle vente");
-        // Ajoutez ici votre logique pour ouvrir une popup de vente
+       
     }
 
     @FXML
     private void handleNouveauClient(ActionEvent event) {
         System.out.println("Action : Ouverture du formulaire de nouveau client");
-        // Ajoutez ici votre logique pour ouvrir une popup de création client
+       
     }
 
-    // === NAVIGATION ===
+   
 
     @FXML 
     private void handleBtnDashboard(ActionEvent event) { 

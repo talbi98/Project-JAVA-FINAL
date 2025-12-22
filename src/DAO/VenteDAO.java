@@ -147,7 +147,7 @@ public class VenteDAO extends DAO<Vente, Integer> {
 
     }
 
-    @Override
+  
     public void delete(Vente v) {
         String sql = "DELETE FROM vente WHERE id = ?";
         try  {

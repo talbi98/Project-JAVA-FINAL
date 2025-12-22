@@ -35,7 +35,7 @@ public class VoitureThermique extends Vehicule {
 	}
 
 
-	@Override
+	
     public double calculerTaxeLuxe() {
         if (emissionCo2 > 200) return 20000.0;
         return 500.0;

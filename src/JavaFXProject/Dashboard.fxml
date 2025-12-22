@@ -13,7 +13,7 @@
 
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.DashboardController">
    
-   <!-- === MENU GAUCHE (SIDEBAR) === -->
+  
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
@@ -52,12 +52,11 @@
       </VBox>
    </left>
 
-   <!-- === CONTENU CENTRAL === -->
+  
    <center>
       <VBox spacing="25.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
             
-            <!-- En-tête -->
             <VBox>
                <children>
                   <Label styleClass="page-title" text="Vue d'ensemble" />
@@ -65,10 +64,10 @@
                </children>
             </VBox>
             
-            <!-- CARTES DE STATISTIQUES (KPI) -->
+           
             <HBox spacing="20.0">
                <children>
-                  <!-- Carte CA / Prix Moyen -->
+                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="CHIFFRE D'AFFAIRES" />
@@ -82,7 +81,7 @@
                      </children>
                   </VBox>
                   
-                  <!-- Carte Stock -->
+                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="VÉHICULES EN STOCK" />
@@ -91,7 +90,7 @@
                      </children>
                   </VBox>
                   
-                  <!-- Carte Atelier -->
+                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="EN ATELIER" />
@@ -102,11 +101,11 @@
                </children>
             </HBox>
 
-            <!-- ZONE DES TABLEAUX -->
+           
             <HBox spacing="25.0" VBox.vgrow="ALWAYS">
                <children>
                   
-                  <!-- Tableau Top 3 -->
+                
                   <VBox spacing="15.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -129,7 +128,7 @@
                      </children>
                   </VBox>
                   
-                  <!-- Tableau Équipe -->
+                 
                   <VBox prefWidth="400.0" spacing="15.0" styleClass="stat-card">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
