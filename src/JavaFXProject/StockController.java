@@ -14,6 +14,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -55,6 +57,9 @@ public class StockController {
             System.err.println("ERREUR: Échec de l'initialisation du StockController.");
         }
     }
+    
+    
+ 
 
     
     private void chargerDonneesDepuisBDD() {
@@ -178,10 +183,39 @@ public class StockController {
 
     @FXML
     private void handleAjouterVehicule() {
-        System.out.println("LOG: Action d'ajout de véhicule déclenchée.");
-       
+    	ouvrirFormulaireAjout();       
     }
 
+    
+    @FXML
+    private void ouvrirFormulaireAjout() {
+        try {
+            // 1. Charger le FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FormulaireVehicule.fxml"));
+            Parent root = loader.load();
+
+            // 2. Créer la fenêtre (Stage)
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Ajouter un véhicule");
+            popupStage.setScene(new Scene(root));
+            
+            // 3. Bloquer la fenêtre principale tant que celle-ci est ouverte (Mode Modal)
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            
+            // 4. Afficher
+            popupStage.showAndWait(); // Attend que la fenêtre se ferme
+
+            // 5. Une fois fermée, on rafraichit le tableau pour voir le nouveau véhicule
+            chargerDonneesDepuisBDD();
+            
+            configurerFiltres();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
  
     private void switchScene(ActionEvent event, String fxmlFile) {
         try {
