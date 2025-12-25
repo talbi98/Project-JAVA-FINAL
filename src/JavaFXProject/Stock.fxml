@@ -34,8 +34,7 @@
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnDashboard" styleClass="menu-btn" text="Tableau de Bord" />
             <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn, menu-btn-active" text="Stock Véhicules" />
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnCommerce" styleClass="menu-btn" text="Ventes &amp; Clients" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="menu-btn" text="Atelier &amp; SAV" />
-            
+<Button maxWidth="Infinity" onAction="#handleBtnAtelier" styleClass="menu-btn" text="Atelier &amp; SAV" />            
             <Pane VBox.vgrow="ALWAYS" /> 
             
            

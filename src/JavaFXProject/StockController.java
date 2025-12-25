@@ -237,4 +237,6 @@ public class StockController {
     private void handleBtnAtelier(ActionEvent event) {
         switchScene(event, "Atelier.fxml");
     }
+    
+    
 }
