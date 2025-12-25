@@ -272,4 +272,18 @@ public class GarageService {
     }
     
     
+    public void enregistrerVente(Vente vente) {
+        // 1. Sauvegarder la vente
+        // (Assure-toi d'avoir VenteDAO venteDAO = new VenteDAO(); en haut de ta classe)
+        VenteDAO.create(vente); 
+
+        // 2. Mettre à jour la voiture : Elle devient "VENDU"
+        Vehicule v = vente.getVehicule();
+        v.setStatut("VENDU");
+        
+        // 3. Sauvegarder le changement de statut en BDD
+        vehiculeDAO.update(v); 
+    }
+    
+    
 }
