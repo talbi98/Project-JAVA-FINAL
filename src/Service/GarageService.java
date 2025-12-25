@@ -125,43 +125,41 @@ public class GarageService {
     }
     
     
-    public Intervention planifierIntervention(int idVehicule, int idMecanicien, String description) throws GarageException {
-        Vehicule v = vehiculeDAO.findById(idVehicule);
-        Employe e = employeDAO.findById(idMecanicien);
-        
-        if (v == null) throw new GarageException("Véhicule introuvable");
-        if (!(e instanceof Mecanicien)) throw new GarageException("Cet employé n'est pas un mécanicien !");
-
-        Intervention i = new Intervention(v, (Mecanicien) e, description, 500.0);
-        
-        interventionDAO.create(i); 
-        
-        System.out.println("Succès : Intervention enregistrée en BDD avec l'ID " + i.getId());
-        return i;
+    public List<Intervention> listerInterventions() {
+        return interventionDAO.findAll();
     }
-    
-    public void terminerIntervention(int idIntervention) {
 
-    	Intervention i = interventionDAO.findById(idIntervention);
-        
-        if (i != null && "EN_COURS".equals(i.getStatut())) {
-            
-            i.setStatut("TERMINE");
-            i.setDateFin(new java.sql.Date(System.currentTimeMillis())); 
-            
-            Vehicule v = i.getVehicule();
-            v.setStatut("DISPO"); 
-            
-            interventionDAO.update(i);
+    // Nouvelle version qui prend l'objet entier (utilisé par le formulaire JavaFX)
+    public void creerIntervention(Intervention i) {
+        // 1. Enregistrer l'intervention dans la BDD
+        interventionDAO.create(i);
+
+        // 2. Mettre à jour le véhicule -> Statut "ATELIER"
+        Vehicule v = i.getVehicule();
+        if (v != null) {
+            v.setStatut("ATELIER");
             vehiculeDAO.update(v);
-            
-            System.out.println("✅ Intervention terminée : " + v.getMarque() + " est disponible.");
-        } else {
-            System.err.println("❌ Erreur : Intervention introuvable ou déjà terminée.");
+            System.out.println("Atelier : Le véhicule " + v.getMarque() + " est entré en réparation.");
         }
     }
-    
-    
+
+    // Nouvelle version qui prend l'objet entier (utilisé par le bouton "Terminer")
+    public void terminerIntervention(Intervention i) {
+        // 1. Mettre à jour l'intervention (Date fin + Statut)
+        i.setStatut("TERMINE");
+        i.setDateFin(new java.sql.Date(System.currentTimeMillis())); // Date d'aujourd'hui
+        
+        // On sauvegarde les modifs de l'intervention
+        interventionDAO.update(i);
+
+        // 2. Mettre à jour le véhicule -> Statut "DISPO"
+        Vehicule v = i.getVehicule();
+        if (v != null) {
+            v.setStatut("DISPO");
+            vehiculeDAO.update(v);
+            System.out.println("Atelier : Réparation terminée. Le véhicule " + v.getMarque() + " est disponible.");
+        }
+    }
     
     
     public boolean realiserVente(int idVehicule, int idClient, int idVendeur) throws Exception {

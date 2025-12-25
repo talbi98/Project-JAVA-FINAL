@@ -1,7 +1,6 @@
 package JavaFXProject;
 
 import Service.GarageService;
-
 import Metier.Employe;
 import Metier.Mecanicien;
 import Metier.Vehicule;
@@ -27,28 +26,23 @@ import java.util.List;
 
 public class DashboardController {
 
-    
     private GarageService service = new GarageService();
 
-   
     @FXML private Label lblPrixMoyen;
     @FXML private Label lblTotalStock;
     @FXML private Label lblAtelier;
 
-   
     @FXML private TableView<Vehicule> tableTop3;
     @FXML private TableColumn<Vehicule, String> colMarque;
     @FXML private TableColumn<Vehicule, String> colModele;
     @FXML private TableColumn<Vehicule, Double> colPrix;
     @FXML private TableColumn<Vehicule, String> colStatut;
 
-   
     @FXML private TableView<Employe> tableEmployes;
     @FXML private TableColumn<Employe, String> colEmpNom;
     @FXML private TableColumn<Employe, String> colEmpPrenom;
     @FXML private TableColumn<Employe, String> colEmpPoste;
 
-   
     @FXML
     public void initialize() {
         try {
@@ -61,33 +55,46 @@ public class DashboardController {
         }
     }
 
-    
-    
+    // --- ZONE DE NAVIGATION (Les 4 boutons du menu) ---
+
+    @FXML
+    private void handleBtnDashboard(ActionEvent event) {
+        // On est déjà sur le dashboard, on peut juste recharger ou ne rien faire
+        System.out.println("Actualisation du Dashboard...");
+        switchScene(event, "Dashboard.fxml");
+    }
+
     @FXML
     private void handleBtnStock(ActionEvent event) {
-        System.out.println("Clic sur bouton Stock...");
+        System.out.println("Vers Stock...");
         switchScene(event, "Stock.fxml");
     }
 
     @FXML
     private void handleBtnCommerce(ActionEvent event) {
-        System.out.println("Clic sur bouton Commerce...");
+        System.out.println("Vers Commerce...");
         switchScene(event, "Commerce.fxml");
     }
 
-   
+    @FXML
+    private void handleBtnAtelier(ActionEvent event) {
+        System.out.println("Vers Atelier...");
+        switchScene(event, "Atelier.fxml");
+    }
+
+    // --------------------------------------------------
+
     private void switchScene(ActionEvent event, String fxmlFile) {
         try {
             URL resource = getClass().getResource(fxmlFile);
             if (resource == null) {
-                System.err.println("ERREUR : Le fichier " + fxmlFile + " est introuvable dans le dossier JavaFXProject.");
+                System.err.println("ERREUR : Le fichier " + fxmlFile + " est introuvable.");
                 return;
             }
             
             Parent root = FXMLLoader.load(resource);
             Scene scene = ((Node) event.getSource()).getScene();
             scene.setRoot(root);
-            System.out.println("Navigation réussie vers : " + fxmlFile);
             
         } catch (IOException e) {
             System.err.println("Erreur critique lors du chargement de " + fxmlFile);
@@ -96,16 +103,13 @@ public class DashboardController {
     }
 
     private void chargerIndicateurs() {
-     
         double caTotal = service.calculerPrixMoyenVentes();
         lblPrixMoyen.setText(String.format("%,.0f €", caTotal));
 
-       
         List<Vehicule> tout = service.listerToutLeGarage();
         long nbDispo = tout.stream().filter(v -> "DISPO".equals(v.getStatut())).count();
         lblTotalStock.setText(String.valueOf(nbDispo));
 
-       
         long nbAtelier = tout.stream()
                 .filter(v -> "ATELIER".equals(v.getStatut()) || "EN_COURS".equals(v.getStatut()))
                 .count();

@@ -232,4 +232,9 @@ public class StockController {
             e.printStackTrace();
         }
     }
+    
+    @FXML
+    private void handleBtnAtelier(ActionEvent event) {
+        switchScene(event, "Atelier.fxml");
+    }
 }
