@@ -8,25 +8,18 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-   
+    @Override
     public void start(Stage primaryStage) {
         try {
-           
-            Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
             Scene scene = new Scene(root);
-            
             primaryStage.setTitle("Monaco Luxury Garage - Manager V2.0");
             primaryStage.setScene(scene);
-            
-            
             primaryStage.setMinWidth(900);
             primaryStage.setMinHeight(600);
-            
             primaryStage.show();
-            
         } catch(Exception e) {
             e.printStackTrace();
-            System.err.println(" Erreur critique : Impossible de charger l'interface.");
         }
     }
 

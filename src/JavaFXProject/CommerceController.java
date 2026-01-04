@@ -13,170 +13,105 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality; // Important pour la fenêtre bloquante
-import javafx.stage.Stage;    // Important pour la fenêtre
-
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
 public class CommerceController {
 
     private GarageService service = new GarageService();
 
-    // --- Table Ventes ---
     @FXML private TableView<Vente> tableVentes;
-    @FXML private TableColumn<Vente, String> colVenteRef;
-    @FXML private TableColumn<Vente, java.sql.Date> colVenteDate;
-    @FXML private TableColumn<Vente, String> colVenteVehicule;
-    @FXML private TableColumn<Vente, String> colVenteClient;
+    @FXML private TableColumn<Vente, String> colVenteRef, colVenteVehicule, colVenteClient, colVenteDate;
     @FXML private TableColumn<Vente, Double> colVenteMontant;
-
-    // --- Table Clients ---
     @FXML private TableView<Client> tableClients;
-    @FXML private TableColumn<Client, String> colClientNom;
-    @FXML private TableColumn<Client, String> colClientEmail;
-    @FXML private TableColumn<Client, String> colClientVip;
-    @FXML private TextField txtChercherClient; // J'ai ajouté le champ de recherche
+    @FXML private TableColumn<Client, String> colClientNom, colClientEmail, colClientVip;
+    
+    @FXML private Button btnNouvelleVente, btnNouveauClient, btnFactures;
+    @FXML private Label lblUserInitial, lblUserName, lblUserRole;
 
     @FXML
     public void initialize() {
-        try {
-            setupColonnes();
-            chargerDonnees();
-            System.out.println("Page Commerce chargée.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setupColonnes() {
-        // --- VENTES ---
-        colVenteDate.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getdateVente()));
-        colVenteRef.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getReference()));
+        chargerDonnees();
         
-        colVenteVehicule.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getVehicule() != null) {
-                return new SimpleStringProperty(cellData.getValue().getVehicule().getMarque() + " " + cellData.getValue().getVehicule().getModele());
-            }
-            return new SimpleStringProperty("N/A");
-        });
-
-        colVenteClient.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getClient() != null) {
-                return new SimpleStringProperty(cellData.getValue().getClient().getNom() + " " + cellData.getValue().getClient().getPrenom());
-            }
-            return new SimpleStringProperty("Inconnu");
-        });
-
-        colVenteMontant.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMontantFinal()));
-        colVenteMontant.setCellFactory(column -> new TableCell<Vente, Double>() {
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(String.format("%,.0f €", item));
-                    setStyle("-fx-font-weight: bold;");
-                }
-            }
-        });
-
-        // --- CLIENTS ---
-        colClientNom.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNom() + " " + cellData.getValue().getPrenom()));
-        colClientEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
-        colClientVip.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getVipLevel()));
+        if (!Session.isAdmin()) {
+            if (btnNouvelleVente != null) btnNouvelleVente.setVisible(false);
+            if (btnNouveauClient != null) btnNouveauClient.setVisible(false);
+            if (btnFactures != null) { btnFactures.setVisible(false); btnFactures.setManaged(false); }
+        }
+        configurerProfilUtilisateur();
     }
 
     private void chargerDonnees() {
-        // Charge les deux tableaux
-        List<Vente> ventes = service.listerVentes();
-        tableVentes.setItems(FXCollections.observableArrayList(ventes));
-
-        List<Client> clients = service.listerClients();
-        tableClients.setItems(FXCollections.observableArrayList(clients));
-    }
-
-    // --- ACTIONS BOUTONS ---
-
-    @FXML
-    private void handleNouvelleVente(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("FormulaireVente.fxml"));
-            Parent root = loader.load();
-
-            Stage popupStage = new Stage();
-            popupStage.setTitle("Nouvelle Vente");
-            popupStage.setScene(new Scene(root));
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-
-            popupStage.showAndWait();
-
-            // Une fois fini, on recharge les données pour voir la nouvelle vente
-            chargerDonnees();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleNouveauClient(ActionEvent event) {
-        // C'EST ICI QUE J'AI CORRIGÉ LE CODE :
-        try {
-            // 1. Charger la vue du formulaire
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("FormulaireClient.fxml"));
-            Parent root = loader.load();
-
-            // 2. Créer la fenêtre
-            Stage popupStage = new Stage();
-            popupStage.setTitle("Nouveau Client");
-            popupStage.setScene(new Scene(root));
-            
-            // 3. Bloquer la fenêtre derrière
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            
-            // 4. Afficher et attendre
-            popupStage.showAndWait();
-
-            // 5. Rafraîchir le tableau après fermeture
-            chargerDonnees();
-
-        } catch (IOException e) {
-            System.err.println("Impossible d'ouvrir FormulaireClient.fxml");
-            e.printStackTrace();
-        }
-    }
-
-    // --- NAVIGATION ---
-
-    @FXML 
-    private void handleBtnDashboard(ActionEvent event) { 
-        switchScene(event, "Dashboard.fxml"); 
-    }
-    
-    @FXML 
-    private void handleBtnStock(ActionEvent event) { 
-        switchScene(event, "Stock.fxml"); 
-    }
-
-    private void switchScene(ActionEvent event, String fxmlFile) {
-        try {
-            URL resource = getClass().getResource(fxmlFile);
-            if (resource == null) {
-                System.err.println("Fichier introuvable : " + fxmlFile);
-                return;
+        // VENTES
+        tableVentes.setItems(FXCollections.observableArrayList(service.listerVentes()));
+        colVenteRef.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getReference()));
+        colVenteDate.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getdateVente().toString()));
+        colVenteVehicule.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getVehicule() != null ? c.getValue().getVehicule().getModele() : "?"));
+        colVenteClient.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getClient() != null ? c.getValue().getClient().getNom() : "?"));
+        colVenteMontant.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getMontantFinal()));
+        
+        colVenteMontant.setCellFactory(col -> new TableCell<Vente, Double>() {
+            @Override protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(null);
+                else { setText(String.format("%,.0f €", item)); setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;"); }
             }
-            Parent root = FXMLLoader.load(resource);
+        });
+
+        // CLIENTS
+        tableClients.setItems(FXCollections.observableArrayList(service.listerClients()));
+        colClientNom.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNom() + " " + c.getValue().getPrenom()));
+        colClientEmail.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmail()));
+        colClientVip.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getVipLevel()));
+    }
+
+    @FXML private void handleNouvelleVente() { openPopup("FormulaireVente.fxml"); }
+    @FXML private void handleNouveauClient() { openPopup("FormulaireClient.fxml"); }
+
+    private void openPopup(String fxml) {
+        try {
+            Stage stage = new Stage();
+            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource(fxml))));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            chargerDonnees();
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    // --- NAVIGATION CORRIGÉE ---
+    @FXML private void handleBtnDashboard(ActionEvent event) { switchScene(event, "Dashboard.fxml"); }
+    @FXML private void handleBtnStock(ActionEvent event) { switchScene(event, "Stock.fxml"); }
+    @FXML private void handleBtnAtelier(ActionEvent event) { switchScene(event, "Atelier.fxml"); }
+    @FXML private void handleBtnFactures(ActionEvent event) { switchScene(event, "Facture.fxml"); }
+    
+    @FXML private void handleLogout(ActionEvent event) {
+        Session.logout();
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
+            Scene scene = ((Node) event.getSource()).getScene();
+            Stage stage = (Stage) scene.getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void switchScene(ActionEvent event, String fxml) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxml));
             Scene scene = ((Node) event.getSource()).getScene();
             scene.setRoot(root);
-        } catch (IOException e) { 
-            e.printStackTrace(); 
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
     
-    @FXML
-    private void handleBtnAtelier(ActionEvent event) {
-        switchScene(event, "Atelier.fxml");
+    private void configurerProfilUtilisateur() {
+        if (lblUserName != null) lblUserName.setText(Session.getNom());
+        if (Session.isAdmin()) {
+            if (lblUserRole != null) lblUserRole.setText("Directeur");
+            if (lblUserInitial != null) { lblUserInitial.setText("A"); lblUserInitial.setStyle("-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold;"); }
+        } else {
+            if (lblUserRole != null) lblUserRole.setText("Employé");
+            if (lblUserInitial != null) { lblUserInitial.setText("U"); lblUserInitial.setStyle("-fx-background-color: #2196f3; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold; -fx-text-fill: white;"); }
+        }
     }
 }

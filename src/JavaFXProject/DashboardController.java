@@ -14,11 +14,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,65 +40,68 @@ public class DashboardController {
     @FXML private TableColumn<Employe, String> colEmpNom;
     @FXML private TableColumn<Employe, String> colEmpPrenom;
     @FXML private TableColumn<Employe, String> colEmpPoste;
+    
+    // NOUVEAU : Profil et Sécurité
+    @FXML private Label lblUserInitial;
+    @FXML private Label lblUserName;
+    @FXML private Label lblUserRole;
+    @FXML private Button btnFactures; // Assure-toi d'avoir ce fx:id dans ton FXML si tu veux le cacher
 
     @FXML
     public void initialize() {
         try {
             chargerIndicateurs();
             chargerTableauTop3();
-            chargerTableauEmployes(); 
+            chargerTableauEmployes();
+            
+            // Gestion Admin/User
+            if (!Session.isAdmin()) {
+                if (btnFactures != null) {
+                    btnFactures.setVisible(false);
+                    btnFactures.setManaged(false);
+                }
+            }
+            configurerProfilUtilisateur();
+            
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Erreur chargement dashboard : " + e.getMessage());
         }
     }
 
-    // --- ZONE DE NAVIGATION (Les 4 boutons du menu) ---
+    // --- NAVIGATION CORRIGÉE (LA CLE DU SUCCES) ---
 
-    @FXML
-    private void handleBtnDashboard(ActionEvent event) {
-        // On est déjà sur le dashboard, on peut juste recharger ou ne rien faire
-        System.out.println("Actualisation du Dashboard...");
-        switchScene(event, "Dashboard.fxml");
+    @FXML private void handleBtnDashboard(ActionEvent event) { switchScene(event, "Dashboard.fxml"); }
+    @FXML private void handleBtnStock(ActionEvent event) { switchScene(event, "Stock.fxml"); }
+    @FXML private void handleBtnCommerce(ActionEvent event) { switchScene(event, "Commerce.fxml"); }
+    @FXML private void handleBtnAtelier(ActionEvent event) { switchScene(event, "Atelier.fxml"); }
+    @FXML private void handleBtnFactures(ActionEvent event) { switchScene(event, "Facture.fxml"); }
+
+    @FXML private void handleLogout(ActionEvent event) {
+        Session.logout();
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) { e.printStackTrace(); }
     }
-
-    @FXML
-    private void handleBtnStock(ActionEvent event) {
-        System.out.println("Vers Stock...");
-        switchScene(event, "Stock.fxml");
-    }
-
-    @FXML
-    private void handleBtnCommerce(ActionEvent event) {
-        System.out.println("Vers Commerce...");
-        switchScene(event, "Commerce.fxml");
-    }
-
-    @FXML
-    private void handleBtnAtelier(ActionEvent event) {
-        System.out.println("Vers Atelier...");
-        switchScene(event, "Atelier.fxml");
-    }
-
-    // --------------------------------------------------
 
     private void switchScene(ActionEvent event, String fxmlFile) {
         try {
-            URL resource = getClass().getResource(fxmlFile);
-            if (resource == null) {
-                System.err.println("ERREUR : Le fichier " + fxmlFile + " est introuvable.");
-                return;
-            }
-            
-            Parent root = FXMLLoader.load(resource);
+            // ICI C'EST LA CORRECTION QUI FAIT MARCHER LES BOUTONS
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
             Scene scene = ((Node) event.getSource()).getScene();
-            scene.setRoot(root);
-            
+            scene.setRoot(root); // On remplace le contenu de la fenêtre
         } catch (IOException e) {
             System.err.println("Erreur critique lors du chargement de " + fxmlFile);
             e.printStackTrace();
         }
     }
+
+    // --- CHARGEMENT DES DONNÉES (DESIGN PREMIUM) ---
 
     private void chargerIndicateurs() {
         double caTotal = service.calculerPrixMoyenVentes();
@@ -124,27 +125,36 @@ public class DashboardController {
         colModele.setCellValueFactory(new PropertyValueFactory<>("modele"));
         colPrix.setCellValueFactory(new PropertyValueFactory<>("prixVente"));
         
+        // FORMATAGE PRIX (ex: 250 000 €)
+        colPrix.setCellFactory(col -> new TableCell<Vehicule, Double>() {
+            @Override protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(null);
+                else {
+                    setText(String.format("%,.0f €", item));
+                    setStyle("-fx-text-fill: white; -fx-alignment: CENTER-RIGHT;");
+                }
+            }
+        });
+
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        
+        // BADGES COULEURS
         colStatut.setCellFactory(column -> new TableCell<Vehicule, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
+                    setGraphic(null); setText(null);
                 } else {
                     Label badge = new Label(item);
-                    badge.setStyle("-fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 5;");
+                    badge.setStyle("-fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 5; -fx-text-fill: white;");
                     
-                    if ("VENDU".equals(item)) {
-                        badge.setStyle(badge.getStyle() + "-fx-background-color: rgba(244, 67, 54, 0.2); -fx-text-fill: #ff6b6b;");
-                    } else if ("DISPO".equals(item)) {
-                        badge.setStyle(badge.getStyle() + "-fx-background-color: rgba(76, 175, 80, 0.2); -fx-text-fill: #69f0ae;");
-                    } else {
-                        badge.setStyle(badge.getStyle() + "-fx-background-color: rgba(255, 152, 0, 0.2); -fx-text-fill: #ff9800;");
-                    }
-                    setGraphic(badge);
-                    setText(null);
+                    if ("VENDU".equals(item)) badge.setStyle(badge.getStyle() + "-fx-background-color: #f44336;"); // Rouge
+                    else if ("DISPO".equals(item)) badge.setStyle(badge.getStyle() + "-fx-background-color: #4caf50;"); // Vert
+                    else badge.setStyle(badge.getStyle() + "-fx-background-color: #ff9800;"); // Orange
+                    
+                    setGraphic(badge); setText(null);
                 }
             }
         });
@@ -161,15 +171,28 @@ public class DashboardController {
 
         colEmpPoste.setCellValueFactory(cellData -> {
             Employe e = cellData.getValue();
-            if (e instanceof Vendeur) {
-                return new SimpleStringProperty("Vendeur");
-            } else if (e instanceof Mecanicien) {
-                return new SimpleStringProperty("Mécanicien");
-            } else {
-                return new SimpleStringProperty("Autre");
-            }
+            if (e instanceof Vendeur) return new SimpleStringProperty("Vendeur");
+            else if (e instanceof Mecanicien) return new SimpleStringProperty("Mécanicien");
+            else return new SimpleStringProperty("Autre");
         });
 
         tableEmployes.setItems(data);
+    }
+    
+    private void configurerProfilUtilisateur() {
+        if (lblUserName != null) lblUserName.setText(Session.getNom());
+        if (Session.isAdmin()) {
+            if (lblUserRole != null) lblUserRole.setText("Directeur / Admin");
+            if (lblUserInitial != null) {
+                lblUserInitial.setText("A");
+                lblUserInitial.setStyle("-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-text-fill: black; -fx-padding: 8 14; -fx-font-weight: bold;");
+            }
+        } else {
+            if (lblUserRole != null) lblUserRole.setText("Employé");
+            if (lblUserInitial != null) {
+                lblUserInitial.setText("U");
+                lblUserInitial.setStyle("-fx-background-color: #2196f3; -fx-background-radius: 20; -fx-text-fill: white; -fx-padding: 8 14; -fx-font-weight: bold;");
+            }
+        }
     }
 }

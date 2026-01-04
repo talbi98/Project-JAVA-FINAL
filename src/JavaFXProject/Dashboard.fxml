@@ -13,7 +13,6 @@
 
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.DashboardController">
    
-  
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
@@ -34,16 +33,20 @@
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleBtnCommerce" styleClass="menu-btn" text="Ventes &amp; Clients" />
             
             <Button maxWidth="Infinity" onAction="#handleBtnAtelier" styleClass="menu-btn" text="Atelier &amp; SAV" />            
+
+            <Button fx:id="btnFactures" maxWidth="Infinity" onAction="#handleBtnFactures" styleClass="menu-btn" text="Factures &amp; Compta" />
                     
             <Pane VBox.vgrow="ALWAYS" /> 
             
+            <Button onAction="#handleLogout" text="SE DÉCONNECTER" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #ff6b6b; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-cursor: hand; -fx-font-weight: bold;" />
+            
             <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-padding: 20 0 0 0; -fx-border-color: #333; -fx-border-width: 1 0 0 0;">
                <children>
-                  <Label style="-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-text-fill: black; -fx-padding: 8 14; -fx-font-weight: bold;" text="A" />
+                  <Label fx:id="lblUserInitial" style="-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-text-fill: black; -fx-padding: 8 14; -fx-font-weight: bold;" text="A" />
                   <VBox>
                      <children>
-                        <Label style="-fx-text-fill: white; -fx-font-weight: bold;" text="Admin" />
-                        <Label style="-fx-text-fill: #666; -fx-font-size: 11px;" text="Directeur" />
+                        <Label fx:id="lblUserName" style="-fx-text-fill: white; -fx-font-weight: bold;" text="Admin" />
+                        <Label fx:id="lblUserRole" style="-fx-text-fill: #666; -fx-font-size: 11px;" text="Directeur" />
                      </children>
                   </VBox>
                </children>
@@ -52,7 +55,6 @@
       </VBox>
    </left>
 
-  
    <center>
       <VBox spacing="25.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
@@ -64,10 +66,8 @@
                </children>
             </VBox>
             
-           
             <HBox spacing="20.0">
                <children>
-                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="CHIFFRE D'AFFAIRES" />
@@ -81,7 +81,6 @@
                      </children>
                   </VBox>
                   
-                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="VÉHICULES EN STOCK" />
@@ -90,7 +89,6 @@
                      </children>
                   </VBox>
                   
-                 
                   <VBox prefWidth="300.0" styleClass="stat-card">
                      <children>
                         <Label styleClass="stat-label" text="EN ATELIER" />
@@ -101,11 +99,8 @@
                </children>
             </HBox>
 
-           
             <HBox spacing="25.0" VBox.vgrow="ALWAYS">
                <children>
-                  
-                
                   <VBox spacing="15.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -128,7 +123,6 @@
                      </children>
                   </VBox>
                   
-                 
                   <VBox prefWidth="400.0" spacing="15.0" styleClass="stat-card">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -149,7 +143,6 @@
                         </TableView>
                      </children>
                   </VBox>
-                  
                </children>
             </HBox>
          </children>
