@@ -1,0 +1,11 @@
+============= MONACO GARAGE =============
+FACTURE REF : V-7
+DATE        : Thu Jan 15 14:06:19 CET 2026
+-----------------------------------------
+CLIENT      : Wayne Bruce
+DESCRIPTION : Vente véhicule : audi rs6
+-----------------------------------------
+MONTANT HT  : 130969,60 euros
+TVA (20%)   : 32742,40 euros
+TOTAL TTC   : 163712,00 euros
+=========================================

@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #121212;" stylesheets="@application.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFXProject.StockController">
+   
    <left>
       <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
@@ -23,17 +24,21 @@
          </children>
       </VBox>
    </left>
+   
    <center>
       <VBox spacing="20.0" styleClass="content-area" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER_LEFT" spacing="15.0">
                <VBox><Label styleClass="page-title" text="Gestion du Stock" /><Label styleClass="page-subtitle" text="Visualisez et gérez votre parc automobile d'exception." /></VBox>
+               
                <Pane HBox.hgrow="ALWAYS" />
-               <TextField fx:id="txtRecherche" promptText="Rechercher..." style="-fx-background-color: #1e1e1e; -fx-text-fill: white; -fx-padding: 8; -fx-background-radius: 5;" />
+               
                <ComboBox fx:id="comboMarque" prefWidth="150.0" promptText="Marque" style="-fx-background-color: #1e1e1e; -fx-mark-color: white;" />
                <ComboBox fx:id="comboStatut" prefWidth="150.0" promptText="Statut" style="-fx-background-color: #1e1e1e; -fx-mark-color: white;" />
+               
                <Button fx:id="btnAjouterVehicule" onAction="#handleAjouterVehicule" text="+ AJOUTER" style="-fx-background-color: #ff9800; -fx-text-fill: black; -fx-font-weight: bold; -fx-cursor: hand;" />
             </HBox>
+            
             <VBox styleClass="stat-card" VBox.vgrow="ALWAYS">
                <TableView fx:id="tableStock" VBox.vgrow="ALWAYS">
                   <columns>

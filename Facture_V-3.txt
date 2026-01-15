@@ -1,0 +1,11 @@
+============= MONACO GARAGE =============
+FACTURE REF : V-3
+DATE        : Thu Jan 15 14:06:57 CET 2026
+-----------------------------------------
+CLIENT      : Wayne Bruce
+DESCRIPTION : Vente véhicule : Ferrari SF90
+-----------------------------------------
+MONTANT HT  : 400000,00 euros
+TVA (20%)   : 100000,00 euros
+TOTAL TTC   : 500000,00 euros
+=========================================

@@ -23,16 +23,22 @@ import java.util.stream.Collectors;
 public class StockController {
    
     private GarageService service = new GarageService();
+    
+    // Données pour le tableau
     private ObservableList<Vehicule> masterData = FXCollections.observableArrayList();
     private FilteredList<Vehicule> filteredData;
 
-    @FXML private TextField txtRecherche;
-    @FXML private ComboBox<String> comboMarque, comboStatut;
+    // Filtres (Plus de barre de recherche)
+    @FXML private ComboBox<String> comboMarque;
+    @FXML private ComboBox<String> comboStatut;
+
+    // Tableau
     @FXML private TableView<Vehicule> tableStock;
     @FXML private TableColumn<Vehicule, Integer> colId;
     @FXML private TableColumn<Vehicule, String> colMarque, colModele, colStatut;
     @FXML private TableColumn<Vehicule, Double> colPrix;
     
+    // Boutons et Profil
     @FXML private Button btnAjouterVehicule, btnFactures;
     @FXML private Label lblUserInitial, lblUserName, lblUserRole;
 
@@ -41,8 +47,9 @@ public class StockController {
         try {
             chargerDonneesDepuisBDD();
             configurerColonnes();
-            configurerFiltres();
+            configurerFiltres(); // C'est ici qu'on active les ComboBox
             
+            // Sécurité Admin/User
             if (!Session.isAdmin()) {
                 if (btnAjouterVehicule != null) btnAjouterVehicule.setVisible(false);
                 if (btnFactures != null) { btnFactures.setVisible(false); btnFactures.setManaged(false); }
@@ -52,8 +59,13 @@ public class StockController {
     }
     
     private void chargerDonneesDepuisBDD() {
+        // 1. On récupère tout
         masterData.setAll(service.listerToutLeGarage());
+        
+        // 2. On prépare le filtre (au début, il laisse tout passer "p -> true")
         filteredData = new FilteredList<>(masterData, p -> true);
+        
+        // 3. On lie le tableau aux données filtrées
         tableStock.setItems(filteredData);
     }
 
@@ -63,7 +75,7 @@ public class StockController {
         colModele.setCellValueFactory(new PropertyValueFactory<>("modele"));
         colPrix.setCellValueFactory(new PropertyValueFactory<>("prixVente"));
         
-        // DESIGN PRIX
+        // Design du Prix
         colPrix.setCellFactory(column -> new TableCell<Vehicule, Double>() {
             @Override protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -77,7 +89,7 @@ public class StockController {
 
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         
-        // DESIGN BADGES COULEURS
+        // Design des Badges Statut
         colStatut.setCellFactory(column -> new TableCell<Vehicule, String>() {
             @Override protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -95,21 +107,44 @@ public class StockController {
     }
     
     private void configurerFiltres() {
-        List<String> marques = masterData.stream().map(Vehicule::getMarque).distinct().sorted().collect(Collectors.toList());
-        marques.add(0, "Toutes");
+        // 1. Remplir la ComboBox des Marques avec les marques existantes en BDD
+        List<String> marques = masterData.stream()
+                                         .map(Vehicule::getMarque)
+                                         .distinct()
+                                         .sorted()
+                                         .collect(Collectors.toList());
+        marques.add(0, "Toutes"); // On ajoute l'option pour tout voir
         comboMarque.setItems(FXCollections.observableArrayList(marques));
+        comboMarque.getSelectionModel().selectFirst(); // Sélectionne "Toutes" par défaut
+
+        // 2. Remplir la ComboBox des Statuts
         comboStatut.setItems(FXCollections.observableArrayList("Tous", "DISPO", "VENDU", "ATELIER"));
+        comboStatut.getSelectionModel().selectFirst(); // Sélectionne "Tous" par défaut
         
-        txtRecherche.textProperty().addListener((o, old, n) -> appliquerFiltre());
-        comboMarque.valueProperty().addListener((o, old, n) -> appliquerFiltre());
-        comboStatut.valueProperty().addListener((o, old, n) -> appliquerFiltre());
+        // 3. Ajouter les "Ecouteurs" : dès qu'on change une valeur, on filtre
+        comboMarque.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltre());
+        comboStatut.valueProperty().addListener((obs, oldVal, newVal) -> appliquerFiltre());
     }
     
     private void appliquerFiltre() {
-        filteredData.setPredicate(v -> {
-            String search = (txtRecherche.getText() != null) ? txtRecherche.getText().toLowerCase() : "";
-            boolean matchText = search.isEmpty() || v.getModele().toLowerCase().contains(search) || v.getMarque().toLowerCase().contains(search);
-            return matchText; 
+        String marqueSelectionnee = comboMarque.getValue();
+        String statutSelectionne = comboStatut.getValue();
+
+        filteredData.setPredicate(vehicule -> {
+            // Logique pour la Marque
+            boolean matchMarque = true;
+            if (marqueSelectionnee != null && !"Toutes".equals(marqueSelectionnee)) {
+                matchMarque = vehicule.getMarque().equalsIgnoreCase(marqueSelectionnee);
+            }
+
+            // Logique pour le Statut
+            boolean matchStatut = true;
+            if (statutSelectionne != null && !"Tous".equals(statutSelectionne)) {
+                matchStatut = vehicule.getStatut().equalsIgnoreCase(statutSelectionne);
+            }
+
+            // On garde le véhicule seulement si Marque ET Statut correspondent
+            return matchMarque && matchStatut; 
         });
     }
 
@@ -120,11 +155,13 @@ public class StockController {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
+            // Recharger les données et mettre à jour les filtres (nouvelle marque peut-être ?)
             chargerDonneesDepuisBDD();
+            configurerFiltres(); 
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    // --- NAVIGATION CORRIGÉE ---
+    // --- NAVIGATION ---
     @FXML private void handleBtnDashboard(ActionEvent event) { switchScene(event, "Dashboard.fxml"); }
     @FXML private void handleBtnCommerce(ActionEvent event) { switchScene(event, "Commerce.fxml"); }
     @FXML private void handleBtnAtelier(ActionEvent event) { switchScene(event, "Atelier.fxml"); }
