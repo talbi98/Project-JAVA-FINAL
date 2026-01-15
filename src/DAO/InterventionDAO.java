@@ -11,95 +11,116 @@ import Metier.Vehicule;
 
 public class InterventionDAO extends DAO<Intervention, Integer> {
 
-	private VehiculeDAO vehiculeDAO = new VehiculeDAO();
-	private EmployeDAO employeDAO = new EmployeDAO();
+    private VehiculeDAO vehiculeDAO = new VehiculeDAO();
+    private EmployeDAO employeDAO = new EmployeDAO();
 
-	
-	
-	public Intervention create(Intervention i) {
-		
-		String sql = "INSERT INTO intervention (date_debut, description, statut, vehicule_id, mecanicien_id) VALUES (?, ?, ?, ?, ?)";
+    @Override
+    public Intervention create(Intervention i) {
+        // SQL modifié pour inclure le prix
+        String sql = "INSERT INTO intervention (date_debut, description, statut, vehicule_id, mecanicien_id, prix_main_oeuvre) VALUES (?, ?, ?, ?, ?, ?)";
 
-		try  {
-			PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try {
+            PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-			ps.setDate(1, new java.sql.Date(i.getDateDebut().getTime()));
-			ps.setString(2, i.getDescription());
-			ps.setString(3, i.getStatut());
-			ps.setInt(4, i.getVehicule().getId());
-			ps.setInt(5, i.getMecanicien().getId());
+            ps.setDate(1, new java.sql.Date(i.getDateDebut().getTime()));
+            ps.setString(2, i.getDescription());
+            ps.setString(3, i.getStatut());
+            ps.setInt(4, i.getVehicule().getId());
+            ps.setInt(5, i.getMecanicien().getId());
+            
+            // Sauvegarde du prix saisi
+            ps.setDouble(6, i.getPrixMainOeuvre());
 
-			ps.executeUpdate();
+            ps.executeUpdate();
 
-			ResultSet rs = ps.getGeneratedKeys();
-			
-			if (rs.next()) {
-				i.setId(rs.getInt(1));
-			}
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                i.setId(rs.getInt(1));
+            }
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return i;
-	}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return i;
+    }
 
-	public List<Intervention> findAll() {
-		List<Intervention> liste = new ArrayList<>();
-		String sql = "SELECT * FROM intervention";
 
-		try  {
-			
-			Statement stmt = connect.createStatement(); 
-			ResultSet rs = stmt.executeQuery(sql);
-			
-			
-			while (rs.next()) {
-				
-				Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
-				Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
+    public List<Intervention> findAll() {
+        List<Intervention> liste = new ArrayList<>();
+        String sql = "SELECT * FROM intervention";
 
-				if (v != null && e instanceof Mecanicien) {
-					Intervention i = new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"), 
-					rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, 0.0  );
-				
-					liste.add(i);
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return liste;
-	}
+        try {
+            Statement stmt = connect.createStatement(); 
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
+                Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
 
-	public Intervention findById(Integer id) {
-		
-		String sql = "SELECT * FROM intervention WHERE id = ?";
-		
-		try  {
-			PreparedStatement ps = connect.prepareStatement(sql);
-			
-			ps.setInt(1, id);
-		
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
-					Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
+                if (v != null && e instanceof Mecanicien) {
+                    // Lecture du vrai prix depuis la base de données
+                    double prixReel = rs.getDouble("prix_main_oeuvre");
 
-					if (v != null && e instanceof Mecanicien) {
-						return new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"),
-								rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, 0.0);
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+                    Intervention i = new Intervention(
+                        rs.getInt("id"), 
+                        rs.getDate("date_debut"), 
+                        rs.getDate("date_fin"), 
+                        rs.getString("description"), 
+                        rs.getString("statut"), 
+                        v, 
+                        (Mecanicien) e, 
+                        prixReel // Utilisation du prix réel
+                    );
+                
+                    liste.add(i);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
 
-	
-	public Intervention update(Intervention i) {
-        String sql = "UPDATE intervention SET date_fin=?, statut=?, description=? WHERE id=?";
+  
+    public Intervention findById(Integer id) {
+        String sql = "SELECT * FROM intervention WHERE id = ?";
+        
+        try {
+            PreparedStatement ps = connect.prepareStatement(sql);
+            ps.setInt(1, id);
+        
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
+                    Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
+
+                    if (v != null && e instanceof Mecanicien) {
+                        // Lecture du vrai prix ici aussi
+                        double prixReel = rs.getDouble("prix_main_oeuvre");
+
+                        return new Intervention(
+                            rs.getInt("id"), 
+                            rs.getDate("date_debut"), 
+                            rs.getDate("date_fin"),
+                            rs.getString("description"), 
+                            rs.getString("statut"), 
+                            v, 
+                            (Mecanicien) e, 
+                            prixReel 
+                        );
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Intervention update(Intervention i) {
+        // SQL modifié pour permettre la mise à jour du prix également
+        String sql = "UPDATE intervention SET date_fin=?, statut=?, description=?, prix_main_oeuvre=? WHERE id=?";
 
         try (PreparedStatement ps = connect.prepareStatement(sql)) {
 
@@ -111,7 +132,11 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
 
             ps.setString(2, i.getStatut());
             ps.setString(3, i.getDescription());
-            ps.setInt(4, i.getId());
+            
+            // Mise à jour du prix
+            ps.setDouble(4, i.getPrixMainOeuvre());
+            
+            ps.setInt(5, i.getId());
 
             int rows = ps.executeUpdate();
 
@@ -125,12 +150,22 @@ public class InterventionDAO extends DAO<Intervention, Integer> {
         
         return null;
     }
-	
-	
+    
+ 
+    public void delete(Integer id) {
+        String sql = "DELETE FROM intervention WHERE id = ?";
+        try (PreparedStatement ps = connect.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public void delete(Integer id) {
-	}
-
-	public void delete(Intervention obj) {
-	}
+    @Override
+    public void delete(Intervention obj) {
+        if (obj != null) {
+            delete(obj.getId());
+        }
+    }
 }

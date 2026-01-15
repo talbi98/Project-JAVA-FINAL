@@ -18,37 +18,74 @@ import java.io.IOException;
 public class FactureController {
 
     private GarageService service = new GarageService();
+    
     @FXML private TableView<IFacturable> tableFactures;
     @FXML private TableColumn<IFacturable, String> colRef, colDescription, colClient, colDate;
     @FXML private TableColumn<IFacturable, Double> colMontant;
+    
     @FXML private Label lblUserInitial, lblUserName, lblUserRole;
 
     @FXML
     public void initialize() {
+        chargerDonnees();
+        configurerProfilUtilisateur();
+    }
+    
+    private void chargerDonnees() {
         tableFactures.setItems(FXCollections.observableArrayList(service.listerHistoriqueFactures()));
+        
         colRef.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getReference()));
         colDescription.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescriptionFacture()));
         colClient.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getClientFacture() != null ? c.getValue().getClientFacture().getNom() : "Interne"));
-        colDate.setCellValueFactory(c -> new SimpleStringProperty("2025-01-04")); // Date fictive ou à implémenter
+        colDate.setCellValueFactory(c -> new SimpleStringProperty("2026-01-15"));
         colMontant.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getMontantTotal()));
         
+        // Design du prix (Vert)
         colMontant.setCellFactory(col -> new TableCell<IFacturable, Double>() {
             @Override protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) setText(null);
-                else { setText(String.format("%,.0f €", item)); setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold; -fx-alignment: CENTER-RIGHT;"); }
+                else { 
+                    setText(String.format("%,.0f €", item)); 
+                    setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold; -fx-alignment: CENTER-RIGHT;"); 
+                }
             }
         });
-        
-        configurerProfilUtilisateur();
     }
 
-    @FXML private void handleImprimer() {
+    @FXML 
+    private void handleImprimer() {
+        // 1. Récupérer la sélection
         IFacturable item = tableFactures.getSelectionModel().getSelectedItem();
-        if(item != null) System.out.println(GarageService.editerFacture(item));
+        
+        if(item != null) {
+            try {
+                // 2. Créer le fichier texte
+                String nomFichier = service.imprimerFactureTxt(item);
+                
+                // 3. Confirmation
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Impression Réussie");
+                alert.setHeaderText("Facture générée !");
+                alert.setContentText("Le fichier a été créé : " + nomFichier);
+                alert.showAndWait();
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur");
+                alert.setContentText("Impossible d'écrire le fichier.");
+                alert.showAndWait();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Attention");
+            alert.setContentText("Veuillez sélectionner une ligne dans le tableau.");
+            alert.showAndWait();
+        }
     }
 
-    // --- NAVIGATION CORRIGÉE ---
+    // --- NAVIGATION ---
     @FXML private void handleBtnDashboard(ActionEvent event) { switchScene(event, "Dashboard.fxml"); }
     @FXML private void handleBtnStock(ActionEvent event) { switchScene(event, "Stock.fxml"); }
     @FXML private void handleBtnCommerce(ActionEvent event) { switchScene(event, "Commerce.fxml"); }
