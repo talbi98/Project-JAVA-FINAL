@@ -1,4 +1,20 @@
-package JavaFXProject;
+
+package JavaFXProject ;
+
+import java.util.List;
+
+import DAO.ClientDAO;
+import Metier.Client;
+
+
+
+import Service.GarageService;
+import Metier.Client;
+import Metier.Vente;
+import javafx.beans.property.SimpleObjectProperty;
+
+	
+
 
 import Service.GarageService;
 import Metier.Client;

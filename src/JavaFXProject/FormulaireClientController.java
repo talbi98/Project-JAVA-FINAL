@@ -1,19 +1,23 @@
 package JavaFXProject;
 
 import Service.GarageService;
-import Metier.Client; 
+import Metier.Client;
+import javafx.collections.FXCollections; 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox; // Import important
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class FormulaireClientController {
 
-    // Ces champs doivent correspondre aux fx:id de ton FXML
     @FXML private TextField txtNom;
     @FXML private TextField txtPrenom;
     @FXML private TextField txtTel;
     @FXML private TextField txtEmail;
+    
+    // NOUVEAU : La liste déroulante
+    @FXML private ComboBox<String> comboStatut;
     
     @FXML private Button btnValider;
     @FXML private Button btnAnnuler;
@@ -22,6 +26,11 @@ public class FormulaireClientController {
 
     @FXML
     public void initialize() {
+        // 1. Remplir la liste des statuts
+        comboStatut.setItems(FXCollections.observableArrayList("STANDARD", "PLATINUM", "VIP"));
+        // Sélectionner "STANDARD" par défaut
+        comboStatut.getSelectionModel().select("STANDARD");
+
         // Liaison des boutons aux méthodes
         btnValider.setOnAction(e -> ajouterClient());
         btnAnnuler.setOnAction(e -> fermerFenetre());
@@ -36,24 +45,26 @@ public class FormulaireClientController {
             String prenom = txtPrenom.getText();
             String tel = txtTel.getText();
             String email = txtEmail.getText();
+            // Récupérer le statut choisi
+            String statutChoisi = comboStatut.getValue();
 
-            // Petite validation de sécurité
+            // Validation de sécurité
             if (nom.isEmpty() || prenom.isEmpty()) {
                 System.err.println("Erreur : Le Nom et le Prénom sont obligatoires !");
                 return;
             }
 
-            // 2. Créer l'objet Client
-            // ON UTILISE TON 2ème CONSTRUCTEUR
-            // Il va mettre automatiquement vipLevel à "STANDARD"
+            // 2. Créer l'objet Client avec ton constructeur existant
             Client nouveauClient = new Client(nom, prenom, email, tel);
             
-            // Si tu voulais changer le VIP, tu pourrais faire :
-            // nouveauClient.setVipLevel("GOLD");
+            // 3. Appliquer le statut choisi par l'utilisateur
+            if (statutChoisi != null) {
+                nouveauClient.setVipLevel(statutChoisi);
+            }
 
-            System.out.println("Client créé en Java : " + nouveauClient.toString());
+            System.out.println("Client créé : " + nouveauClient.getNom() + " - Statut : " + nouveauClient.getVipLevel());
 
-            // 3. Envoyer à la BDD via le Service
+            // 4. Envoyer à la BDD via le Service
             service.ajouterClient(nouveauClient); 
             
             System.out.println("Succès ! Fermeture de la fenêtre.");
@@ -66,7 +77,6 @@ public class FormulaireClientController {
     }
 
     private void fermerFenetre() {
-        // Récupère la fenêtre (Stage) actuelle via le bouton et la ferme
         Stage stage = (Stage) btnAnnuler.getScene().getWindow();
         stage.close();
     }
