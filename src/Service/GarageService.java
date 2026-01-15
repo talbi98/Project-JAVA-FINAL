@@ -1,5 +1,8 @@
 package Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,7 +18,6 @@ import Metier.Client;
 import Metier.Employe;
 import Metier.IFacturable;
 import Metier.Intervention;
-import Metier.Mecanicien;
 import Metier.Vehicule;
 import Metier.VehiculeElectrique;
 import Metier.Vendeur;
@@ -30,7 +32,7 @@ public class GarageService {
     private ClientDAO clientDAO = new ClientDAO();
     private VenteDAO venteDAO = new VenteDAO();
 
-    // --- VEHICULES ---
+    // --- GESTION VEHICULES ---
     public void ajouterVehicule(Vehicule v) { vehiculeDAO.create(v); }
     public List<Vehicule> listerToutLeGarage() { return vehiculeDAO.findAll(); }
     
@@ -67,15 +69,15 @@ public class GarageService {
                 .collect(Collectors.groupingBy(Vehicule::getMarque));
     }
 
-    // --- CLIENTS ---
+    // --- GESTION CLIENTS ---
     public void ajouterClient(Client c) { clientDAO.create(c); }
     public List<Client> listerClients() { return clientDAO.findAll(); }
 
-    // --- EMPLOYES ---
+    // --- GESTION EMPLOYES ---
     public void embaucherEmploye(Employe e) { employeDAO.create(e); }
     public List<Employe> listerEmployes() { return employeDAO.findAll(); }
 
-    // --- VENTES ---
+    // --- GESTION VENTES ---
     public List<Vente> listerVentes() { return venteDAO.findAll(); }
     
     public void enregistrerVente(Vente vente) {
@@ -109,7 +111,7 @@ public class GarageService {
                 .orElse(0.0);                        
     }
 
-    // --- ATELIER / INTERVENTIONS ---
+    // --- GESTION ATELIER ---
     public List<Intervention> listerInterventions() { return interventionDAO.findAll(); }
 
     public void creerIntervention(Intervention i) {
@@ -132,16 +134,11 @@ public class GarageService {
         }
     }
 
-    // --- FACTURES (NOUVEAU) ---
+    // --- GESTION FACTURES & IMPRESSION (TP 7) ---
     
     public List<IFacturable> listerHistoriqueFactures() {
         List<IFacturable> historique = new ArrayList<>();
-        
-        // 1. Ajouter toutes les ventes
-        List<Vente> ventes = venteDAO.findAll();
-        historique.addAll(ventes);
-        
-        // 2. Ajouter toutes les interventions terminées
+        historique.addAll(venteDAO.findAll());
         List<Intervention> interventions = interventionDAO.findAll();
         for (Intervention i : interventions) {
             if ("TERMINE".equals(i.getStatut())) {
@@ -151,22 +148,42 @@ public class GarageService {
         return historique;
     }
 
+    // Méthode 1 : Prépare le texte de la facture (String)
     public static String editerFacture(IFacturable element) {
         StringBuilder sb = new StringBuilder();
         sb.append("============= MONACO GARAGE =============\n");
         sb.append("FACTURE REF : ").append(element.getReference()).append("\n");
+        sb.append("DATE        : ").append(new java.util.Date()).append("\n");
+        sb.append("-----------------------------------------\n");
+        
         if (element.getClientFacture() != null) {
-            sb.append("CLIENT      : ").append(element.getClientFacture().getNom()).append("\n");
+            sb.append("CLIENT      : ").append(element.getClientFacture().getNom()).append(" ").append(element.getClientFacture().getPrenom()).append("\n");
         } else {
             sb.append("CLIENT      : Garage / Interne\n");
         }
+        
+        sb.append("DESCRIPTION : ").append(element.getDescriptionFacture()).append("\n");
         sb.append("-----------------------------------------\n");
-        sb.append("OBJET       : ").append(element.getDescriptionFacture()).append("\n");
-        sb.append("MONTANT HT  : ").append(String.format("%.2f", element.getMontantTotal() * 0.8)).append(" €\n");
-        sb.append("TVA (20%)   : ").append(String.format("%.2f", element.getMontantTotal() * 0.2)).append(" €\n");
-        sb.append("-----------------------------------------\n");
-        sb.append("TOTAL TTC   : ").append(String.format("%.2f", element.getMontantTotal())).append(" €\n");
+        sb.append("MONTANT HT  : ").append(String.format("%.2f", element.getMontantTotal() * 0.8)).append(" euros\n");
+        sb.append("TVA (20%)   : ").append(String.format("%.2f", element.getMontantTotal() * 0.2)).append(" euros\n");
+        sb.append("TOTAL TTC   : ").append(String.format("%.2f", element.getMontantTotal())).append(" euros\n");
         sb.append("=========================================\n");
         return sb.toString();
+    }
+
+    // Méthode 2 : Crée le fichier TXT sur le disque (TP 7 - Exercice 1)
+    public String imprimerFactureTxt(IFacturable element) throws IOException {
+        // Le fichier sera créé à la racine du projet, comme demandé dans le TP 7
+        String nomFichier = "Facture_" + element.getReference() + ".txt";
+        
+        // Récupération du texte formaté
+        String contenu = editerFacture(element);
+        
+        // Écriture dans le fichier avec PrintWriter et FileWriter
+        try (PrintWriter writer = new PrintWriter(new FileWriter(nomFichier))) {
+            writer.print(contenu);
+        }
+        
+        return nomFichier;
     }
 }
