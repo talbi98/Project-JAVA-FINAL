@@ -17,67 +17,71 @@ import java.util.stream.Collectors;
 
 public class FormulaireInterventionController {
 
-    @FXML private ComboBox<Vehicule> comboVehicule;
-    @FXML private ComboBox<Mecanicien> comboMecanicien;
-    @FXML private TextArea txtDescription;
-    @FXML private TextField txtPrix;
-    
-    @FXML private Button btnValider;
-    @FXML private Button btnAnnuler;
+	@FXML
+	private ComboBox<Vehicule> comboVehicule;
+	@FXML
+	private ComboBox<Mecanicien> comboMecanicien;
+	@FXML
+	private TextArea txtDescription;
+	@FXML
+	private TextField txtPrix;
 
-    private GarageService service = new GarageService();
+	@FXML
+	private Button btnValider;
+	@FXML
+	private Button btnAnnuler;
 
-    @FXML
-    public void initialize() {
-        chargerListes();
-        btnValider.setOnAction(e -> validerIntervention());
-        btnAnnuler.setOnAction(e -> fermerFenetre());
-    }
+	private GarageService service = new GarageService();
 
-    private void chargerListes() {
-        // 1. Véhicules : On peut prendre tout le monde ou juste les DISPO/ATELIER
-        List<Vehicule> vehicules = service.listerToutLeGarage();
-        comboVehicule.getItems().addAll(vehicules);
+	@FXML
+	public void initialize() {
+		chargerListes();
+		btnValider.setOnAction(e -> validerIntervention());
+		btnAnnuler.setOnAction(e -> fermerFenetre());
+	}
 
-        // 2. Mécaniciens : On récupère tous les employés et on ne garde que les Mécaniciens
-        List<Employe> employes = service.listerEmployes();
-        
-        for (Employe e : employes) {
-            if (e instanceof Mecanicien) {
-                comboMecanicien.getItems().add((Mecanicien) e);
-            }
-        }
-    }
+	private void chargerListes() {
 
-    private void validerIntervention() {
-        try {
-            Vehicule v = comboVehicule.getValue();
-            Mecanicien m = comboMecanicien.getValue();
-            String desc = txtDescription.getText();
-            String prixStr = txtPrix.getText();
+		List<Vehicule> vehicules = service.listerToutLeGarage();
+		comboVehicule.getItems().addAll(vehicules);
 
-            if (v == null || m == null || desc.isEmpty() || prixStr.isEmpty()) {
-                System.out.println("Tout remplir svp !");
-                return;
-            }
+		List<Employe> employes = service.listerEmployes();
 
-            double prix = Double.parseDouble(prixStr);
+		for (Employe e : employes) {
+			if (e instanceof Mecanicien) {
+				comboMecanicien.getItems().add((Mecanicien) e);
+			}
+		}
+	}
 
-            // Création avec ton constructeur spécifique
-            Intervention i = new Intervention(v, m, desc, prix);
+	private void validerIntervention() {
+		try {
+			Vehicule v = comboVehicule.getValue();
+			Mecanicien m = comboMecanicien.getValue();
+			String desc = txtDescription.getText();
+			String prixStr = txtPrix.getText();
 
-            service.creerIntervention(i);
-            
-            System.out.println("Intervention créée !");
-            fermerFenetre();
+			if (v == null || m == null || desc.isEmpty() || prixStr.isEmpty()) {
+				System.out.println("Tout remplir svp !");
+				return;
+			}
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+			double prix = Double.parseDouble(prixStr);
 
-    private void fermerFenetre() {
-        Stage stage = (Stage) btnAnnuler.getScene().getWindow();
-        stage.close();
-    }
+			Intervention i = new Intervention(v, m, desc, prix);
+
+			service.creerIntervention(i);
+
+			System.out.println("Intervention créée !");
+			fermerFenetre();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void fermerFenetre() {
+		Stage stage = (Stage) btnAnnuler.getScene().getWindow();
+		stage.close();
+	}
 }

@@ -40,11 +40,11 @@ public class EmployeDAO extends DAO<Employe, Integer> {
 			ps.executeUpdate();
 
 			rs = ps.getGeneratedKeys();
-			
+
 			if (rs.next()) {
-				
+
 				e.setId(rs.getInt(1));
-				
+
 			}
 
 		} catch (SQLException ex) {
@@ -55,83 +55,61 @@ public class EmployeDAO extends DAO<Employe, Integer> {
 		return e;
 	}
 
-	public List<Employe> findAll() 
-	{
+	public List<Employe> findAll() {
 		List<Employe> liste = new ArrayList<>();
 		String sql = "SELECT * FROM employe";
 
-		try  {
+		try {
 			Statement stmt = connect.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			while (rs.next()) {
 				String type = rs.getString("type_employe");
 				Employe e = null;
 
 				if ("VENDEUR".equals(type)) {
-					e = new Vendeur(rs.getInt("id"),
-							rs.getString("nom"),
-							rs.getString("prenom"), 
-							rs.getString("login"),
-							rs.getString("password"), 
-							rs.getDouble("commission_pct"));
-					
+					e = new Vendeur(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("login"),
+							rs.getString("password"), rs.getDouble("commission_pct"));
+
 				} else if ("MECANICIEN".equals(type)) {
-					e = new Mecanicien(rs.getInt("id"), 
-							rs.getString("nom"), 
-							rs.getString("prenom"),
-							rs.getString("login"), 
-							rs.getString("password"), 
-							rs.getString("specialite"));
+					e = new Mecanicien(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"),
+							rs.getString("login"), rs.getString("password"), rs.getString("specialite"));
 				}
-				
+
 				if (e != null)
 					liste.add(e);
 			}
-			
-			
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		
-		
+
 		return liste;
-		
-		
+
 	}
-	
-	
 
 	public static Employe findById(int id) {
-		
+
 		String sql = "SELECT * FROM employe WHERE id = ?";
 		Employe e = null;
 
 		try {
-			PreparedStatement ps = connect.prepareStatement(sql) ;
+			PreparedStatement ps = connect.prepareStatement(sql);
 			ps.setInt(1, id);
 
 			try (ResultSet rs = ps.executeQuery()) {
-				
+
 				if (rs.next()) {
 					String type = rs.getString("type_employe");
 
 					if ("VENDEUR".equals(type)) {
-						e = new Vendeur(rs.getInt("id"),
-								rs.getString("nom"),
-								rs.getString("prenom"),
-								rs.getString("login"), 
-								rs.getString("password"), 
-								rs.getDouble("commission_pct"));
-						
+						e = new Vendeur(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"),
+								rs.getString("login"), rs.getString("password"), rs.getDouble("commission_pct"));
+
 					} else if ("MECANICIEN".equals(type)) {
-						e = new Mecanicien(rs.getInt("id"),
-								rs.getString("nom"),
-								rs.getString("prenom"),
-								rs.getString("login"), 
-								rs.getString("password"), 
-								rs.getString("specialite"));
-						
+						e = new Mecanicien(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"),
+								rs.getString("login"), rs.getString("password"), rs.getString("specialite"));
+
 					}
 				}
 			}
@@ -141,8 +119,6 @@ public class EmployeDAO extends DAO<Employe, Integer> {
 		return e;
 	}
 
-	
-	
 	public Employe update(Employe obj) {
 		String sql = "UPDATE employe SET nom=?, prenom=?, login=?, password=?, type_employe=?, commission_pct=?, specialite=? WHERE id=?";
 
@@ -174,21 +150,18 @@ public class EmployeDAO extends DAO<Employe, Integer> {
 		}
 		return obj;
 	}
-	
-	
-	
 
 	public void delete(Employe obj) {
 		String sql = "DELETE FROM employe WHERE id = ?";
 
-		try  {
+		try {
 			PreparedStatement ps = connect.prepareStatement(sql);
-			
+
 			ps.setInt(1, obj.getId());
 			ps.executeUpdate();
-			
+
 			System.out.println("Employé supprimé avec succès.");
-			
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}

@@ -2,7 +2,7 @@ package JavaFXProject;
 
 import Service.GarageService;
 import Metier.Client;
-import javafx.collections.FXCollections; 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox; // Import important
@@ -11,73 +11,74 @@ import javafx.stage.Stage;
 
 public class FormulaireClientController {
 
-    @FXML private TextField txtNom;
-    @FXML private TextField txtPrenom;
-    @FXML private TextField txtTel;
-    @FXML private TextField txtEmail;
-    
-    // NOUVEAU : La liste déroulante
-    @FXML private ComboBox<String> comboStatut;
-    
-    @FXML private Button btnValider;
-    @FXML private Button btnAnnuler;
+	@FXML
+	private TextField txtNom;
+	@FXML
+	private TextField txtPrenom;
+	@FXML
+	private TextField txtTel;
+	@FXML
+	private TextField txtEmail;
 
-    private GarageService service = new GarageService();
+	@FXML
+	private ComboBox<String> comboStatut;
 
-    @FXML
-    public void initialize() {
-        // 1. Remplir la liste des statuts
-        comboStatut.setItems(FXCollections.observableArrayList("STANDARD", "PLATINUM", "VIP"));
-        // Sélectionner "STANDARD" par défaut
-        comboStatut.getSelectionModel().select("STANDARD");
+	@FXML
+	private Button btnValider;
+	@FXML
+	private Button btnAnnuler;
 
-        // Liaison des boutons aux méthodes
-        btnValider.setOnAction(e -> ajouterClient());
-        btnAnnuler.setOnAction(e -> fermerFenetre());
-    }
+	private GarageService service = new GarageService();
 
-    private void ajouterClient() {
-        try {
-            System.out.println("--- Ajout Client en cours ---");
+	@FXML
+	public void initialize() {
 
-            // 1. Récupérer les infos des champs texte
-            String nom = txtNom.getText();
-            String prenom = txtPrenom.getText();
-            String tel = txtTel.getText();
-            String email = txtEmail.getText();
-            // Récupérer le statut choisi
-            String statutChoisi = comboStatut.getValue();
+		comboStatut.setItems(FXCollections.observableArrayList("STANDARD", "PLATINUM", "VIP"));
 
-            // Validation de sécurité
-            if (nom.isEmpty() || prenom.isEmpty()) {
-                System.err.println("Erreur : Le Nom et le Prénom sont obligatoires !");
-                return;
-            }
+		comboStatut.getSelectionModel().select("STANDARD");
 
-            // 2. Créer l'objet Client avec ton constructeur existant
-            Client nouveauClient = new Client(nom, prenom, email, tel);
-            
-            // 3. Appliquer le statut choisi par l'utilisateur
-            if (statutChoisi != null) {
-                nouveauClient.setVipLevel(statutChoisi);
-            }
+		btnValider.setOnAction(e -> ajouterClient());
+		btnAnnuler.setOnAction(e -> fermerFenetre());
+	}
 
-            System.out.println("Client créé : " + nouveauClient.getNom() + " - Statut : " + nouveauClient.getVipLevel());
+	private void ajouterClient() {
+		try {
+			System.out.println("--- Ajout Client en cours ---");
 
-            // 4. Envoyer à la BDD via le Service
-            service.ajouterClient(nouveauClient); 
-            
-            System.out.println("Succès ! Fermeture de la fenêtre.");
-            fermerFenetre();
+			String nom = txtNom.getText();
+			String prenom = txtPrenom.getText();
+			String tel = txtTel.getText();
+			String email = txtEmail.getText();
 
-        } catch (Exception ex) {
-            System.err.println("Erreur lors de l'ajout du client :");
-            ex.printStackTrace();
-        }
-    }
+			String statutChoisi = comboStatut.getValue();
 
-    private void fermerFenetre() {
-        Stage stage = (Stage) btnAnnuler.getScene().getWindow();
-        stage.close();
-    }
+			if (nom.isEmpty() || prenom.isEmpty()) {
+				System.err.println("Erreur : Le Nom et le Prénom sont obligatoires !");
+				return;
+			}
+
+			Client nouveauClient = new Client(nom, prenom, email, tel);
+
+			if (statutChoisi != null) {
+				nouveauClient.setVipLevel(statutChoisi);
+			}
+
+			System.out
+					.println("Client créé : " + nouveauClient.getNom() + " - Statut : " + nouveauClient.getVipLevel());
+
+			service.ajouterClient(nouveauClient);
+
+			System.out.println("Succès ! Fermeture de la fenêtre.");
+			fermerFenetre();
+
+		} catch (Exception ex) {
+			System.err.println("Erreur lors de l'ajout du client :");
+			ex.printStackTrace();
+		}
+	}
+
+	private void fermerFenetre() {
+		Stage stage = (Stage) btnAnnuler.getScene().getWindow();
+		stage.close();
+	}
 }

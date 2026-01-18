@@ -11,161 +11,140 @@ import Metier.Vehicule;
 
 public class InterventionDAO extends DAO<Intervention, Integer> {
 
-    private VehiculeDAO vehiculeDAO = new VehiculeDAO();
-    private EmployeDAO employeDAO = new EmployeDAO();
+	private VehiculeDAO vehiculeDAO = new VehiculeDAO();
+	private EmployeDAO employeDAO = new EmployeDAO();
 
-    @Override
-    public Intervention create(Intervention i) {
-        // SQL modifié pour inclure le prix
-        String sql = "INSERT INTO intervention (date_debut, description, statut, vehicule_id, mecanicien_id, prix_main_oeuvre) VALUES (?, ?, ?, ?, ?, ?)";
+	@Override
+	public Intervention create(Intervention i) {
 
-        try {
-            PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		String sql = "INSERT INTO intervention (date_debut, description, statut, vehicule_id, mecanicien_id, prix_main_oeuvre) VALUES (?, ?, ?, ?, ?, ?)";
 
-            ps.setDate(1, new java.sql.Date(i.getDateDebut().getTime()));
-            ps.setString(2, i.getDescription());
-            ps.setString(3, i.getStatut());
-            ps.setInt(4, i.getVehicule().getId());
-            ps.setInt(5, i.getMecanicien().getId());
-            
-            // Sauvegarde du prix saisi
-            ps.setDouble(6, i.getPrixMainOeuvre());
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            ps.executeUpdate();
+			ps.setDate(1, new java.sql.Date(i.getDateDebut().getTime()));
+			ps.setString(2, i.getDescription());
+			ps.setString(3, i.getStatut());
+			ps.setInt(4, i.getVehicule().getId());
+			ps.setInt(5, i.getMecanicien().getId());
 
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                i.setId(rs.getInt(1));
-            }
+			ps.setDouble(6, i.getPrixMainOeuvre());
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
+			ps.executeUpdate();
 
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				i.setId(rs.getInt(1));
+			}
 
-    public List<Intervention> findAll() {
-        List<Intervention> liste = new ArrayList<>();
-        String sql = "SELECT * FROM intervention";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i;
+	}
 
-        try {
-            Statement stmt = connect.createStatement(); 
-            ResultSet rs = stmt.executeQuery(sql);
-            
-            while (rs.next()) {
-                Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
-                Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
+	public List<Intervention> findAll() {
+		List<Intervention> liste = new ArrayList<>();
+		String sql = "SELECT * FROM intervention";
 
-                if (v != null && e instanceof Mecanicien) {
-                    // Lecture du vrai prix depuis la base de données
-                    double prixReel = rs.getDouble("prix_main_oeuvre");
+		try {
+			Statement stmt = connect.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
 
-                    Intervention i = new Intervention(
-                        rs.getInt("id"), 
-                        rs.getDate("date_debut"), 
-                        rs.getDate("date_fin"), 
-                        rs.getString("description"), 
-                        rs.getString("statut"), 
-                        v, 
-                        (Mecanicien) e, 
-                        prixReel // Utilisation du prix réel
-                    );
-                
-                    liste.add(i);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return liste;
-    }
+			while (rs.next()) {
+				Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
+				Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
 
-  
-    public Intervention findById(Integer id) {
-        String sql = "SELECT * FROM intervention WHERE id = ?";
-        
-        try {
-            PreparedStatement ps = connect.prepareStatement(sql);
-            ps.setInt(1, id);
-        
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
-                    Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
+				if (v != null && e instanceof Mecanicien) {
 
-                    if (v != null && e instanceof Mecanicien) {
-                        // Lecture du vrai prix ici aussi
-                        double prixReel = rs.getDouble("prix_main_oeuvre");
+					double prixReel = rs.getDouble("prix_main_oeuvre");
 
-                        return new Intervention(
-                            rs.getInt("id"), 
-                            rs.getDate("date_debut"), 
-                            rs.getDate("date_fin"),
-                            rs.getString("description"), 
-                            rs.getString("statut"), 
-                            v, 
-                            (Mecanicien) e, 
-                            prixReel 
-                        );
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+					Intervention i = new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"),
+							rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, prixReel);
 
-    @Override
-    public Intervention update(Intervention i) {
-        // SQL modifié pour permettre la mise à jour du prix également
-        String sql = "UPDATE intervention SET date_fin=?, statut=?, description=?, prix_main_oeuvre=? WHERE id=?";
+					liste.add(i);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return liste;
+	}
 
-        try (PreparedStatement ps = connect.prepareStatement(sql)) {
+	public Intervention findById(Integer id) {
+		String sql = "SELECT * FROM intervention WHERE id = ?";
 
-            if (i.getDateFin() != null) {
-                ps.setDate(1, new java.sql.Date(i.getDateFin().getTime()));
-            } else {
-                ps.setNull(1, Types.DATE);
-            }
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			ps.setInt(1, id);
 
-            ps.setString(2, i.getStatut());
-            ps.setString(3, i.getDescription());
-            
-            // Mise à jour du prix
-            ps.setDouble(4, i.getPrixMainOeuvre());
-            
-            ps.setInt(5, i.getId());
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
+					Employe e = employeDAO.findById(rs.getInt("mecanicien_id"));
 
-            int rows = ps.executeUpdate();
+					if (v != null && e instanceof Mecanicien) {
 
-            if (rows > 0) {
-                return i;
-            }
+						double prixReel = rs.getDouble("prix_main_oeuvre");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-    
- 
-    public void delete(Integer id) {
-        String sql = "DELETE FROM intervention WHERE id = ?";
-        try (PreparedStatement ps = connect.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+						return new Intervention(rs.getInt("id"), rs.getDate("date_debut"), rs.getDate("date_fin"),
+								rs.getString("description"), rs.getString("statut"), v, (Mecanicien) e, prixReel);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    @Override
-    public void delete(Intervention obj) {
-        if (obj != null) {
-            delete(obj.getId());
-        }
-    }
+	@Override
+	public Intervention update(Intervention i) {
+
+		String sql = "UPDATE intervention SET date_fin=?, statut=?, description=?, prix_main_oeuvre=? WHERE id=?";
+
+		try (PreparedStatement ps = connect.prepareStatement(sql)) {
+
+			if (i.getDateFin() != null) {
+				ps.setDate(1, new java.sql.Date(i.getDateFin().getTime()));
+			} else {
+				ps.setNull(1, Types.DATE);
+			}
+
+			ps.setString(2, i.getStatut());
+			ps.setString(3, i.getDescription());
+
+			ps.setDouble(4, i.getPrixMainOeuvre());
+
+			ps.setInt(5, i.getId());
+
+			int rows = ps.executeUpdate();
+
+			if (rows > 0) {
+				return i;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void delete(Integer id) {
+		String sql = "DELETE FROM intervention WHERE id = ?";
+		try (PreparedStatement ps = connect.prepareStatement(sql)) {
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void delete(Intervention obj) {
+		if (obj != null) {
+			delete(obj.getId());
+		}
+	}
 }

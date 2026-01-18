@@ -14,48 +14,47 @@ import java.io.IOException;
 
 public class LoginController {
 
-    @FXML private TextField txtUser;
-    @FXML private PasswordField txtPass;
-    @FXML private Label lblError;
+	@FXML
+	private TextField txtUser;
+	@FXML
+	private PasswordField txtPass;
+	@FXML
+	private Label lblError;
 
-    @FXML
-    private void handleLogin(ActionEvent event) {
-        String user = txtUser.getText();
-        String pass = txtPass.getText();
+	@FXML
+	private void handleLogin(ActionEvent event) {
+		String user = txtUser.getText();
+		String pass = txtPass.getText();
 
-        if (user.isEmpty() || pass.isEmpty()) {
-            lblError.setText("Veuillez remplir tous les champs.");
-            return;
-        }
+		if (user.isEmpty() || pass.isEmpty()) {
+			lblError.setText("Veuillez remplir tous les champs.");
+			return;
+		}
 
-        // --- AUTHENTIFICATION ---
-        // Tu peux changer les mots de passe ici
-        if ("admin".equals(user) && "admin".equals(pass)) {
-            connexionReussie(event, "Administrateur", "ADMIN");
-        } else if ("user".equals(user) && "user".equals(pass)) {
-            connexionReussie(event, "Invité", "USER");
-        } else {
-            lblError.setText("Identifiant ou mot de passe incorrect.");
-        }
-    }
+		if ("admin".equals(user) && "admin".equals(pass)) {
+			connexionReussie(event, "Administrateur", "ADMIN");
+		} else if ("user".equals(user) && "user".equals(pass)) {
+			connexionReussie(event, "Invité", "USER");
+		} else {
+			lblError.setText("Identifiant ou mot de passe incorrect.");
+		}
+	}
 
-    private void connexionReussie(ActionEvent event, String nom, String role) {
-        try {
-            Session.setSession(nom, role); // Enregistre la session
-            
-            // Charge le Dashboard
-            Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
-            Scene scene = new Scene(root);
-            
-            // Récupère la fenêtre actuelle et change la scène
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.show();
+	private void connexionReussie(ActionEvent event, String nom, String role) {
+		try {
+			Session.setSession(nom, role);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            lblError.setText("Erreur au chargement du Dashboard.");
-        }
-    }
+			Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
+			Scene scene = new Scene(root);
+
+			Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+			stage.setScene(scene);
+			stage.centerOnScreen();
+			stage.show();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			lblError.setText("Erreur au chargement du Dashboard.");
+		}
+	}
 }

@@ -14,160 +14,142 @@ import Metier.Vendeur;
 import Metier.Vente;
 
 public class VenteDAO extends DAO<Vente, Integer> {
-    
-    private ResultSet rs ;
 
-    private VehiculeDAO vehiculeDAO = new VehiculeDAO();
-    private ClientDAO clientDAO = new ClientDAO();
+	private ResultSet rs;
 
-    
-    public Vente create(Vente v) {
-        String sql = "INSERT INTO vente (date_vente, montant_final, vehicule_id, client_id, vendeur_id) VALUES (?, ?, ?, ?, ?)";
-        
-        try  {
-        	
-        	PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setDate(1, v.getdateVente() ); 
-            ps.setDouble(2, v.getMontantFinal());
-            
+	private VehiculeDAO vehiculeDAO = new VehiculeDAO();
+	private ClientDAO clientDAO = new ClientDAO();
 
-            ps.setInt(3, v.getVehicule().getId());
-            ps.setInt(4, v.getClient().getId());
-            ps.setInt(5, v.getVendeur().getId());
+	public Vente create(Vente v) {
+		String sql = "INSERT INTO vente (date_vente, montant_final, vehicule_id, client_id, vendeur_id) VALUES (?, ?, ?, ?, ?)";
 
-            ps.executeUpdate();
-            
-            rs = ps.getGeneratedKeys();
-            if (rs.next()) { v.setId(rs.getInt(1)); }
+		try {
 
-        } catch (SQLException e) {
-        	e.printStackTrace(); 
-        	
-        }
-        return v;
-    }
+			PreparedStatement ps = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps.setDate(1, v.getdateVente());
+			ps.setDouble(2, v.getMontantFinal());
 
-    
-    public List<Vente> findAll() {
-    	open();
-        List<Vente> ventes = new ArrayList<>();
-        String sql = "SELECT * FROM vente";
+			ps.setInt(3, v.getVehicule().getId());
+			ps.setInt(4, v.getClient().getId());
+			ps.setInt(5, v.getVendeur().getId());
 
-        try (Statement stmt = connect.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+			ps.executeUpdate();
 
-            while (rs.next()) {
-                int idVehicule = rs.getInt("vehicule_id");
-                int idClient = rs.getInt("client_id");
-                int idVendeur = rs.getInt("vendeur_id");
+			rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				v.setId(rs.getInt(1));
+			}
 
-                Vehicule v = vehiculeDAO.findById(idVehicule);
-                Client c = clientDAO.findById(idClient);
-                Employe e = EmployeDAO.findById(idVendeur);
+		} catch (SQLException e) {
+			e.printStackTrace();
 
-                Vendeur vendeur = null;
-                if (e instanceof Vendeur) {
-                    vendeur = (Vendeur) e;
-                }
+		}
+		return v;
+	}
 
+	public List<Vente> findAll() {
+		open();
+		List<Vente> ventes = new ArrayList<>();
+		String sql = "SELECT * FROM vente";
 
-                if (v != null && c != null && vendeur != null) {
-                    Vente vente = new Vente(
-                        rs.getInt("id"),
-                        rs.getDate("date_vente"),
-                        rs.getDouble("montant_final"),
-                        v,
-                        c,
-                        vendeur
-                    );
-                    ventes.add(vente);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ventes;
-    }
+		try (Statement stmt = connect.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
-    
-    public Vente findById(Integer id) {
-        String sql = "SELECT * FROM vente WHERE id = ?";
-        Vente vente = null;
+			while (rs.next()) {
+				int idVehicule = rs.getInt("vehicule_id");
+				int idClient = rs.getInt("client_id");
+				int idVendeur = rs.getInt("vendeur_id");
 
-        try {
-        	PreparedStatement ps = connect.prepareStatement(sql);
-            ps.setInt(1, id);
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
-                    Client c = clientDAO.findById(rs.getInt("client_id"));
-                    Employe e = EmployeDAO.findById(rs.getInt("vendeur_id"));
-                    
-                    Vendeur vendeur = (e instanceof Vendeur) ? (Vendeur) e : null;
+				Vehicule v = vehiculeDAO.findById(idVehicule);
+				Client c = clientDAO.findById(idClient);
+				Employe e = EmployeDAO.findById(idVendeur);
 
-                    if (v != null && c != null && vendeur != null) {
-                        vente = new Vente(
-                            rs.getInt("id"),
-                            rs.getDate("date_vente"),
-                            rs.getDouble("montant_final"),
-                            v,
-                            c,
-                            vendeur
-                        );
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return vente;
-    }
+				Vendeur vendeur = null;
+				if (e instanceof Vendeur) {
+					vendeur = (Vendeur) e;
+				}
 
+				if (v != null && c != null && vendeur != null) {
+					Vente vente = new Vente(rs.getInt("id"), rs.getDate("date_vente"), rs.getDouble("montant_final"), v,
+							c, vendeur);
+					ventes.add(vente);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ventes;
+	}
 
-    public Vente update(Vente v) {
-        String sql = "UPDATE vente SET date_vente=?, montant_final=?, vehicule_id=?, client_id=?, vendeur_id=? WHERE id=?";
+	public Vente findById(Integer id) {
+		String sql = "SELECT * FROM vente WHERE id = ?";
+		Vente vente = null;
 
-        try {
-        	PreparedStatement ps = connect.prepareStatement(sql);
-            ps.setDate(1, v.getdateVente());
-            ps.setDouble(2, v.getMontantFinal());
-            
-            ps.setInt(3, v.getVehicule().getId());
-            ps.setInt(4, v.getClient().getId());
-            ps.setInt(5, v.getVendeur().getId());
-            
-            ps.setInt(6, v.getId()); 
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			ps.setInt(1, id);
 
-           ps.executeUpdate() ;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return v;
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Vehicule v = vehiculeDAO.findById(rs.getInt("vehicule_id"));
+					Client c = clientDAO.findById(rs.getInt("client_id"));
+					Employe e = EmployeDAO.findById(rs.getInt("vendeur_id"));
 
-    }
+					Vendeur vendeur = (e instanceof Vendeur) ? (Vendeur) e : null;
 
-  
-    public void delete(Vente v) {
-        String sql = "DELETE FROM vente WHERE id = ?";
-        try  {
-        	PreparedStatement ps = connect.prepareStatement(sql);
-            ps.setInt(1, v.getId());
-            ps.executeUpdate();
-            System.out.println("Vente supprimée.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void delete(Integer id) {
-        String sql = "DELETE FROM vente WHERE id = ?";
-        try  {
-        	PreparedStatement ps = connect.prepareStatement(sql);
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+					if (v != null && c != null && vendeur != null) {
+						vente = new Vente(rs.getInt("id"), rs.getDate("date_vente"), rs.getDouble("montant_final"), v,
+								c, vendeur);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vente;
+	}
+
+	public Vente update(Vente v) {
+		String sql = "UPDATE vente SET date_vente=?, montant_final=?, vehicule_id=?, client_id=?, vendeur_id=? WHERE id=?";
+
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			ps.setDate(1, v.getdateVente());
+			ps.setDouble(2, v.getMontantFinal());
+
+			ps.setInt(3, v.getVehicule().getId());
+			ps.setInt(4, v.getClient().getId());
+			ps.setInt(5, v.getVendeur().getId());
+
+			ps.setInt(6, v.getId());
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return v;
+
+	}
+
+	public void delete(Vente v) {
+		String sql = "DELETE FROM vente WHERE id = ?";
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			ps.setInt(1, v.getId());
+			ps.executeUpdate();
+			System.out.println("Vente supprimée.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void delete(Integer id) {
+		String sql = "DELETE FROM vente WHERE id = ?";
+		try {
+			PreparedStatement ps = connect.prepareStatement(sql);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

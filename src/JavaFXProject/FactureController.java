@@ -17,107 +17,142 @@ import java.io.IOException;
 
 public class FactureController {
 
-    private GarageService service = new GarageService();
-    
-    @FXML private TableView<IFacturable> tableFactures;
-    @FXML private TableColumn<IFacturable, String> colRef, colDescription, colClient, colDate;
-    @FXML private TableColumn<IFacturable, Double> colMontant;
-    
-    @FXML private Label lblUserInitial, lblUserName, lblUserRole;
+	private GarageService service = new GarageService();
 
-    @FXML
-    public void initialize() {
-        chargerDonnees();
-        configurerProfilUtilisateur();
-    }
-    
-    private void chargerDonnees() {
-        tableFactures.setItems(FXCollections.observableArrayList(service.listerHistoriqueFactures()));
-        
-        colRef.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getReference()));
-        colDescription.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescriptionFacture()));
-        colClient.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getClientFacture() != null ? c.getValue().getClientFacture().getNom() : "Interne"));
-        colDate.setCellValueFactory(c -> new SimpleStringProperty("2026-01-15"));
-        colMontant.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getMontantTotal()));
-        
-        // Design du prix (Vert)
-        colMontant.setCellFactory(col -> new TableCell<IFacturable, Double>() {
-            @Override protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) setText(null);
-                else { 
-                    setText(String.format("%,.0f €", item)); 
-                    setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold; -fx-alignment: CENTER-RIGHT;"); 
-                }
-            }
-        });
-    }
+	@FXML
+	private TableView<IFacturable> tableFactures;
+	@FXML
+	private TableColumn<IFacturable, String> colRef, colDescription, colClient, colDate;
+	@FXML
+	private TableColumn<IFacturable, Double> colMontant;
 
-    @FXML 
-    private void handleImprimer() {
-        // 1. Récupérer la sélection
-        IFacturable item = tableFactures.getSelectionModel().getSelectedItem();
-        
-        if(item != null) {
-            try {
-                // 2. Créer le fichier texte
-                String nomFichier = service.imprimerFactureTxt(item);
-                
-                // 3. Confirmation
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Impression Réussie");
-                alert.setHeaderText("Facture générée !");
-                alert.setContentText("Le fichier a été créé : " + nomFichier);
-                alert.showAndWait();
-                
-            } catch (IOException e) {
-                e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur");
-                alert.setContentText("Impossible d'écrire le fichier.");
-                alert.showAndWait();
-            }
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Attention");
-            alert.setContentText("Veuillez sélectionner une ligne dans le tableau.");
-            alert.showAndWait();
-        }
-    }
+	@FXML
+	private Label lblUserInitial, lblUserName, lblUserRole;
 
-    // --- NAVIGATION ---
-    @FXML private void handleBtnDashboard(ActionEvent event) { switchScene(event, "Dashboard.fxml"); }
-    @FXML private void handleBtnStock(ActionEvent event) { switchScene(event, "Stock.fxml"); }
-    @FXML private void handleBtnCommerce(ActionEvent event) { switchScene(event, "Commerce.fxml"); }
-    @FXML private void handleBtnAtelier(ActionEvent event) { switchScene(event, "Atelier.fxml"); }
-    
-    @FXML private void handleLogout(ActionEvent event) {
-        Session.logout();
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-            Scene scene = ((Node) event.getSource()).getScene();
-            Stage stage = (Stage) scene.getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-        } catch (IOException e) { e.printStackTrace(); }
-    }
+	@FXML
+	public void initialize() {
+		chargerDonnees();
+		configurerProfilUtilisateur();
+	}
 
-    private void switchScene(ActionEvent event, String fxml) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxml));
-            Scene scene = ((Node) event.getSource()).getScene();
-            scene.setRoot(root);
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-    
-    private void configurerProfilUtilisateur() {
-        if (lblUserName != null) lblUserName.setText(Session.getNom());
-        if (Session.isAdmin()) {
-            if (lblUserRole != null) lblUserRole.setText("Directeur");
-            if (lblUserInitial != null) { lblUserInitial.setText("A"); lblUserInitial.setStyle("-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold;"); }
-        } else {
-            if (lblUserRole != null) lblUserRole.setText("Employé");
-            if (lblUserInitial != null) { lblUserInitial.setText("U"); lblUserInitial.setStyle("-fx-background-color: #2196f3; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold; -fx-text-fill: white;"); }
-        }
-    }
+	private void chargerDonnees() {
+		tableFactures.setItems(FXCollections.observableArrayList(service.listerHistoriqueFactures()));
+
+		colRef.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getReference()));
+		colDescription.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescriptionFacture()));
+		colClient.setCellValueFactory(c -> new SimpleStringProperty(
+				c.getValue().getClientFacture() != null ? c.getValue().getClientFacture().getNom() : "Interne"));
+		colDate.setCellValueFactory(c -> new SimpleStringProperty("2026-01-15"));
+		colMontant.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getMontantTotal()));
+
+		colMontant.setCellFactory(col -> new TableCell<IFacturable, Double>() {
+			@Override
+			protected void updateItem(Double item, boolean empty) {
+				super.updateItem(item, empty);
+				if (empty || item == null)
+					setText(null);
+				else {
+					setText(String.format("%,.0f €", item));
+					setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold; -fx-alignment: CENTER-RIGHT;");
+				}
+			}
+		});
+	}
+
+	@FXML
+	private void handleImprimer() {
+
+		IFacturable item = tableFactures.getSelectionModel().getSelectedItem();
+
+		if (item != null) {
+			try {
+
+				String nomFichier = service.imprimerFactureTxt(item);
+
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Impression Réussie");
+				alert.setHeaderText("Facture générée !");
+				alert.setContentText("Le fichier a été créé : " + nomFichier);
+				alert.showAndWait();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Erreur");
+				alert.setContentText("Impossible d'écrire le fichier.");
+				alert.showAndWait();
+			}
+		} else {
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.setTitle("Attention");
+			alert.setContentText("Veuillez sélectionner une ligne dans le tableau.");
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	private void handleBtnDashboard(ActionEvent event) {
+		switchScene(event, "Dashboard.fxml");
+	}
+
+	@FXML
+	private void handleBtnStock(ActionEvent event) {
+		switchScene(event, "Stock.fxml");
+	}
+
+	@FXML
+	private void handleBtnCommerce(ActionEvent event) {
+		switchScene(event, "Commerce.fxml");
+	}
+
+	@FXML
+	private void handleBtnAtelier(ActionEvent event) {
+		switchScene(event, "Atelier.fxml");
+	}
+
+	@FXML
+	private void handleLogout(ActionEvent event) {
+		Session.logout();
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
+			Scene scene = ((Node) event.getSource()).getScene();
+			Stage stage = (Stage) scene.getWindow();
+			stage.setScene(scene);
+			stage.centerOnScreen();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void switchScene(ActionEvent event, String fxml) {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource(fxml));
+			Scene scene = ((Node) event.getSource()).getScene();
+			scene.setRoot(root);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void configurerProfilUtilisateur() {
+		if (lblUserName != null)
+			lblUserName.setText(Session.getNom());
+		if (Session.isAdmin()) {
+			if (lblUserRole != null)
+				lblUserRole.setText("Directeur");
+			if (lblUserInitial != null) {
+				lblUserInitial.setText("A");
+				lblUserInitial.setStyle(
+						"-fx-background-color: #ff9800; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold;");
+			}
+		} else {
+			if (lblUserRole != null)
+				lblUserRole.setText("Employé");
+			if (lblUserInitial != null) {
+				lblUserInitial.setText("U");
+				lblUserInitial.setStyle(
+						"-fx-background-color: #2196f3; -fx-background-radius: 20; -fx-padding: 8 14; -fx-font-weight: bold; -fx-text-fill: white;");
+			}
+		}
+	}
 }

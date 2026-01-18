@@ -1,23 +1,22 @@
 package Metier;
 
 public abstract class Vehicule {
-    protected int id;
-    protected String marque;
-    protected String modele;
-    protected String immatriculation;
-    protected double prixVente;
-    protected String statut; 
+	protected int id;
+	protected String marque;
+	protected String modele;
+	protected String immatriculation;
+	protected double prixVente;
+	protected String statut;
 
-    public Vehicule(int id, String marque, String modele, double prixVente) {
-        this.id = id;
-        this.marque = marque;
-        this.modele = modele;
-        this.prixVente = prixVente;
-        this.statut = "DISPO";
-    }
+	public Vehicule(int id, String marque, String modele, double prixVente) {
+		this.id = id;
+		this.marque = marque;
+		this.modele = modele;
+		this.prixVente = prixVente;
+		this.statut = "DISPO";
+	}
 
-    
-    public int getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -64,13 +63,11 @@ public abstract class Vehicule {
 	public void setStatut(String statut) {
 		this.statut = statut;
 	}
-	
-	
-    public abstract double calculerTaxeLuxe();
 
+	public abstract double calculerTaxeLuxe();
 
 	@Override
-    public String toString() {
-        return marque + " " + modele + " (" + prixVente + "€)";
-    }
+	public String toString() {
+		return marque + " " + modele + " (" + prixVente + "€)";
+	}
 }
